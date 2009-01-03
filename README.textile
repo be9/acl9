@@ -45,7 +45,7 @@ Acl9 can be installed as a gem from "GitHub":http://github.com.
 Add the following line to your @config/environment.rb@:
 
 <pre><code>
-  config.gem "be9-acl9", :source => "http://gems.github.com"
+  config.gem "be9-acl9", :source => "http://gems.github.com", :lib => "acl9"
 </pre></code>
 
 Then run @rake gems:install@ (with possible @rake gems:unpack@ thereafter) and you're done!
