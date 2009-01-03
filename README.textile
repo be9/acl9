@@ -50,6 +50,12 @@ Add the following line to your @config/environment.rb@:
 
 Then run @rake gems:install@ (with possible @rake gems:unpack@ thereafter) and you're done!
 
+Alternatively you can install Acl9 as a plugin:
+
+<pre><code>
+  script/plugin install git://github.com/be9/acl9.git
+</pre></code>
+
 h1. Basics
 
 h2. Authorization is not authentication!
