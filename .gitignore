@@ -1,0 +1,4 @@
+spec/db/*.sqlite3
+spec/*.log
+*.html
+pkg
