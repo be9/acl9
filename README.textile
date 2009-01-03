@@ -1,3 +1,5 @@
+h1. Acl9
+
 Acl9 is yet another solution for role-based authorization in Rails. It consists of two
 subsystems which can be used separately.
 
