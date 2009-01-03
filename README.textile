@@ -11,6 +11,31 @@ boolean expression. Then it's turned into a lambda or a method and can
 be used with @before_filter@. Thus you can block unprivileged access to certain
 actions of your controller.
 
+An example:
+
+<pre><code>
+  class VerySecretController < ApplicationController
+    access_control do
+      allow :superadmin
+      allow :owner, :of => :secret
+
+      action :index do
+        allow anonymous, logged_in
+      end
+
+      allow logged_in, :to => :show
+      allow :manager, :of => :secret, :except => [:delete, :destroy]
+      deny :thiefs
+    end
+
+    def index
+      # ...
+    end
+
+    # ...
+  end
+</code></pre>
+
 h1. Installation
 
 Acl9 can be installed as a gem from "GitHub":http://github.com.
@@ -76,7 +101,7 @@ authentication.  Object is an instance of any class (including subject class!)
 or @nil@ (in which case it's a global role).
 
 Acl9 builtin role control subsystem provides @has_role?@ method for you, but you can
-also implemented it by hand (see Coming up with your own role implementation).
+also implemented it by hand (see _Coming up with your own role implementation_ below).
 
 h1. Acl9 role control subsystem
 
@@ -346,31 +371,6 @@ h1. Access control subsystem
 By means of access control subsystem you can protect actions of your controller
 from unauthorized access. Acl9 provides a nice DSL for writing access rules.
 
-Just as example:
-
-<pre><code>
-  class VerySecretController < ApplicationController
-    access_control do
-      allow :superadmin
-      allow :owner, :of => :secret
-
-      action :index do
-        allow anonymous, logged_in
-      end
-
-      allow logged_in, :to => :show
-      allow :manager, :of => :secret, :except => [:delete, :destroy]
-      deny :thiefs
-    end
-
-    def index
-      # ...
-    end
-
-    # ...
-  end
-</code></pre>
-
 h2. Allow and deny
 
 Access control is mostly about allowing and denying. So there two  
@@ -527,8 +527,8 @@ In the second rule anonymous user access is denied for all actions, except _inde
 
 You may not specify both @:to@ and @:except@. 
 
-Note that you can use actions block instead of @:to@ (see Actions block
-further). You can also use @:only@ and @:except@ options in the
+Note that you can use actions block instead of @:to@ (see _Actions block_
+below). You can also use @:only@ and @:except@ options in the
 @access_control@ call which will serve as options of the @before_filter@ and thus
 limit the scope of the whole ACL.
 
@@ -575,35 +575,11 @@ In the case of _default deny_:
 
 Same result as a table:
 
-<table>
-  <tr>
-    <th>Rule matches</th>
-    <th>Default allow</th>
-    <th>Default deny</th>
-  </tr>
-
-  <tr>
-    <td>None of the @allow@ and @deny@ rules matched.</td>
-    <td>Access is allowed.</td>
-    <td>Access is denied.</td>
-  </tr>
-
-  <tr>
-    <td>Some of the @allow@ rules matched, none of the @deny@ rules matched.</td>
-    <td>Access is allowed.</td>
-    <td>Access is allowed.</td>
-  </tr>
-  <tr>
-    <td>None of the @allow@ rules matched, some of the @deny@ rules matched.</td>
-    <td>Access is denied.</td>
-    <td>Access is denied.</td>
-  </tr>
-  <tr>
-    <td>Some of the @allow@ rules matched, some of the @deny@ rules matched.</td>
-    <td>Access is allowed.</td>
-    <td>Access is denied.</td>
-  </tr>
-</table>
+|_. Rule matches |_. Default allow mode |_. Default deny mode |
+| None of the @allow@ and @deny@ rules matched. | Access is allowed. | Access is denied. |
+| Some of the @allow@ rules matched, none of the @deny@ rules matched. | Access is allowed. | Access is allowed. |
+| None of the @allow@ rules matched, some of the @deny@ rules matched. | Access is denied. | Access is denied. |
+| Some of the @allow@ rules matched, some of the @deny@ rules matched. | Access is allowed. | Access is denied. |
 
 Apparently _default deny_ mode is stricter, that's because it's on by default.
 
