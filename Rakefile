@@ -30,3 +30,8 @@ Spec::Rake::SpecTask.new(:spec) do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
 end
 
+desc 'Regenerate the .gemspec'
+task :gemspec => :package do
+  gemspec = Dir["pkg/**/*.gemspec"].first
+  FileUtils.cp gemspec, "."
+end
