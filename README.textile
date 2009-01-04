@@ -118,7 +118,7 @@ Role control subsystem has been lifted from
 but undergone some modifications.
 
 It's based on two tables in the database. First, role table, which stores pairs @[role_name, object]@
-where object is a polymorphic link or a class. Second, join table, which joins users and roles.
+where object is a polymorphic model instance or a class. Second, join table, which joins users and roles.
 
 To use this subsystem, you should define a @Role@ model.
 
@@ -142,7 +142,7 @@ The structure of @roles@ table is as follows:
   end
 </code></pre>
 
-Note that you will never use the @Role@ class directly.
+Note that you will almost never use the @Role@ class directly.
 
 h2. Subject model
 
@@ -333,7 +333,7 @@ In other words, you are _manager_ if you manage at least one @foo@ (or a @bar@..
   user.has_role? :manager             # => true
 </code></pre>
 
-Our @user@ is no more manager of @foo@, but is now a manager of @bar@.
+Our @user@ is no more manager of @foo@, but has become a manager of @bar@.
 
 <pre><code>
   user.has_no_roles!
@@ -343,7 +343,7 @@ Our @user@ is no more manager of @foo@, but is now a manager of @bar@.
   user.roles                          # => []
 </code></pre>
 
-Now @user@ has no roles in the system.
+At this time @user@ has no roles in the system.
 
 h2. Coming up with your own role implementation
 
@@ -381,7 +381,7 @@ from unauthorized access. Acl9 provides a nice DSL for writing access rules.
 
 h2. Allow and deny
 
-Access control is mostly about allowing and denying. So there two  
+Access control is mostly about allowing and denying. So there are two  
 basic methods: @allow@ and @deny@. They have the same syntax:
 
 <pre><code>
@@ -397,8 +397,8 @@ ROLE_LIST is a list of roles (at least 1 role should be there). So,
   allow :manager, :admin
   deny  :banned
 </code></pre>
-will match holders of global role _manager_ *and* holders of global role _admin_ as allowed and 
-_banned_ as denied.
+will match holders of global role _manager_ *and* holders of global role _admin_ as allowed.  
+On the contrary, holders of _banned_ role will match as denied.
 
 Basically this snippet is equivalent to
 
@@ -407,13 +407,13 @@ Basically this snippet is equivalent to
   allow :admin
   deny  :banned
 </code></pre>
-which means that roles in argument list is OR'ed for a match, and not AND'ed.
+which means that roles in argument list are OR'ed for a match, and not AND'ed.
 
 Also note that:
 * You may use both strings and :symbols to specify roles (the latter get converted into strings).
 * Role names are singularized before check.
 
-The mentioned snippet can thus be written as
+Thus the snippet above can also be written as
 
 <pre><code>
   allow :managers, :admins
@@ -440,7 +440,7 @@ use object and class roles in the ACL block.
   deny  :hated, :by => :us
 </code></pre>
 
-So, to specify an object you use one of the 6 preposition options: 
+To specify an object you use one of the 6 preposition options: 
 * :of
 * :at
 * :on
@@ -481,8 +481,6 @@ Checking against an instance variable has sense when you have another _before fi
     end
   end
 </code></pre>
-
-
 
 Note that the object option is applied to all of the roles you specify in the argument list.
 As such,
@@ -589,7 +587,7 @@ Same result as a table:
 | None of the @allow@ rules matched, some of the @deny@ rules matched. | Access is denied. | Access is denied. |
 | Some of the @allow@ rules matched, some of the @deny@ rules matched. | Access is allowed. | Access is denied. |
 
-Apparently _default deny_ mode is stricter, that's because it's on by default.
+Apparently _default deny_ mode is more strict, and that's because it's on by default.
 
 h2. Actions block
 
@@ -644,11 +642,12 @@ By calling @access_control@ in your controller you can get your ACL block transl
 First case is by default. You can catch the exception with @rescue_from@ call and do something 
 you like: make a redirect, or render "Access denied" template, or whatever.
 
-Second case is obtained with @:as_method@ option (see below) and may be helpful if you want
-to use @skip_before_filter@ somewhere on the derived controller.
+Second case is obtained with specifying method name as an argument to
+@access_control@ (or using @:as_method@ option, see below) and may be helpful
+if you want to use @skip_before_filter@ somewhere in the derived controller.
 
-Third case will take place if you use @:as_method@ with @:filter => false@. You'll get an ordinary 
-method which you can call anywhere you want.
+Third case will take place if you supply @:filter => false@ along with method
+name. You'll get an ordinary method which you can call anywhere you want.
 
 h3. :subject_method
 
@@ -693,6 +692,20 @@ In the case
 </code></pre>
 
 access control checks will be added as @acl@ method onto MyController, with @before_filter :acl@ call thereafter.
+
+Instead of using @:as_method@ you may specify the name of the method as a positional argument
+to @access_control@:
+
+<pre><code>
+  class MyController < ApplicationController 
+    access_control :acl do
+      # ...
+    end
+
+    # ...
+  end
+</code></pre>
+
 
 h3. :filter
 

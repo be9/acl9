@@ -684,6 +684,12 @@ describe Acl9::FilterProducer do
 
     private
 
+    def arg_err(&block)
+      lambda do
+        acl(&block)
+      end.should raise_error(ArgumentError)
+    end
+
     def acl(meth = :current_user, &block)
       producer = Acl9::FilterProducer.new(meth)
       producer.acl(&block)
@@ -691,12 +697,6 @@ describe Acl9::FilterProducer do
       producer.extend(PermissionChecks)
 
       producer
-    end
-
-    def arg_err(&block)
-      lambda do
-        acl(&block)
-      end.should raise_error(ArgumentError)
     end
 
     def permit_some(list, user, actions, vars = {})

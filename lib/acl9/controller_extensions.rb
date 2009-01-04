@@ -7,7 +7,27 @@ module Acl9
     end
 
     module ClassMethods
-      def access_control(opts = {}, &block)
+      def access_control(*args, &block)
+        opts = if args.last.is_a? Hash
+                 args.pop
+               else
+                 {}
+               end
+
+        case args.size
+        when 0 then true
+        when 1
+          meth = args.first
+
+          if meth.is_a? Symbol
+            opts[:as_method] = meth
+          else
+            raise ArgumentError, "access control argument must be a :symbol!"
+          end
+        else
+          raise ArgumentError, "Invalid arguments for access_control"
+        end
+
         subject_method = opts.delete(:subject_method) || Acl9::config[:default_subject_method]
 
         raise ArgumentError, "Block must be supplied to access_control" unless block

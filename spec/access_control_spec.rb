@@ -26,28 +26,35 @@ end
 
 # all these controllers behave the same way
 
-class AccessControllingController1 < EmptyController
+class ACLBlock < EmptyController
   access_control do
     allow all, :to => [:index, :show]
     allow :admin
   end
 end
 
-class AccessControllingController2 < EmptyController
+class ACLMethod < EmptyController
   access_control :as_method => :acl do
     allow all, :to => [:index, :show]
     allow :admin, :except => [:index, :show]
   end
 end
 
-class AccessControllingController3 < EmptyController
+class ACLMethod2 < EmptyController
+  access_control :acl do
+    allow all, :to => [:index, :show]
+    allow :admin, :except => [:index, :show]
+  end
+end
+
+class ACLArguments < EmptyController
   access_control :except => [:index, :show] do
     allow :admin
   end
 end
 
-class AccessControllingController4 < EmptyController
-  access_control :as_method => :acl, :filter => false do
+class ACLBooleanMethod < EmptyController
+  access_control :acl, :filter => false do
     allow all, :to => [:index, :show]
     allow :admin
   end
@@ -85,11 +92,11 @@ describe "permit anonymous to index and show and admin everywhere else", :shared
   end
 end
 
-describe AccessControllingController1, :type => :controller do
+describe ACLBlock, :type => :controller do
   it_should_behave_like "permit anonymous to index and show and admin everywhere else"
 end
 
-describe AccessControllingController2, :type => :controller do
+describe ACLMethod, :type => :controller do
   it "should add :acl as a method" do
     controller.should respond_to(:acl)
   end
@@ -97,11 +104,19 @@ describe AccessControllingController2, :type => :controller do
   it_should_behave_like "permit anonymous to index and show and admin everywhere else"
 end
 
-describe AccessControllingController3, :type => :controller do
+describe ACLMethod2, :type => :controller do
+  it "should add :acl as a method" do
+    controller.should respond_to(:acl)
+  end
+
   it_should_behave_like "permit anonymous to index and show and admin everywhere else"
 end
 
-describe AccessControllingController4, :type => :controller do
+describe ACLArguments, :type => :controller do
+  it_should_behave_like "permit anonymous to index and show and admin everywhere else"
+end
+
+describe ACLBooleanMethod, :type => :controller do
   it_should_behave_like "permit anonymous to index and show and admin everywhere else"
 end
 
@@ -111,7 +126,7 @@ end
 
 class VenerableBar; end
 
-class AccessControllingController5 < EmptyController
+class ACLIvars < EmptyController
   before_filter :set_ivars
 
   access_control do
@@ -128,7 +143,7 @@ class AccessControllingController5 < EmptyController
   end
 end
 
-describe AccessControllingController5, :type => :controller do
+describe ACLIvars, :type => :controller do
   class OwnerOfFoo
     def has_role?(role, obj)
       role == 'owner' && obj == MyDearFoo.instance
@@ -158,7 +173,7 @@ class TheOnlyUser
   end
 end
 
-class AccessControllingController6 < ActionController::Base
+class ACLSubjectMethod < ActionController::Base
   access_control :subject_method => :the_only_user do
     allow :the_only_one
   end
@@ -172,7 +187,7 @@ class AccessControllingController6 < ActionController::Base
   end
 end
 
-describe AccessControllingController6, :type => :controller do
+describe ACLSubjectMethod, :type => :controller do
   it "should allow the only user to index" do
     get :index, :user => TheOnlyUser.instance
   end
@@ -181,5 +196,37 @@ describe AccessControllingController6, :type => :controller do
     lambda do
       get :index
     end.should raise_error(Acl9::AccessDenied)
+  end
+end
+
+describe "Argument checking" do
+  def arg_err(&block)
+    lambda do
+      block.call
+    end.should raise_error(ArgumentError)
+  end
+
+  it "should raise ArgumentError without a block" do
+    arg_err do
+      class FailureController < ActionController::Base
+        access_control 
+      end
+    end
+  end
+  
+  it "should raise ArgumentError with 1st argument which is not a symbol" do
+    arg_err do
+      class FailureController < ActionController::Base
+        access_control 123 do end
+      end
+    end
+  end
+  
+  it "should raise ArgumentError with more than 1 positional argument" do
+    arg_err do
+      class FailureController < ActionController::Base
+        access_control :foo, :bar do end
+      end
+    end
   end
 end
