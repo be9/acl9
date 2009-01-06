@@ -7,13 +7,14 @@ module Acl9
   class FilterProducer
     attr_reader :allows, :denys
 
-    def initialize(subject_method)
+    def initialize(subject_method, controller = 'controller')
       @subject_method = subject_method
+      @controller = controller
+      
       @default_action = nil
+
       @allows = []
       @denys = []
-
-      @subject = "controller.send(:#{subject_method})"
     end
 
     def acl(&acl_block)
@@ -28,7 +29,7 @@ module Acl9
       code = <<-RUBY
         lambda do |controller|
           unless #{self.to_s}
-            raise Acl9::AccessDenied
+            #{_access_denied}
           end
         end
       RUBY
@@ -39,15 +40,16 @@ module Acl9
     end
 
     def to_method_code(method_name, filter = true)
-      body = if filter
-               "unless #{self.to_s}; raise Acl9::AccessDenied; end"
-             else
-               self.to_s
-             end
+      if filter
+        body = "unless #{self.to_s}; #{_access_denied}; end"
+        arguments = ''
+      else
+        body = self.to_s
+        arguments = '(objects = {})'
+      end
 
       <<-RUBY
-        def #{method_name}
-          controller = self
+        def #{method_name}#{arguments}
           #{body}
         end
       RUBY
@@ -124,8 +126,6 @@ module Acl9
       false
     end
 
-    private
-
     def _parse_and_add_rule(*args)
       options = if args.last.is_a? Hash
                   args.pop
@@ -139,11 +139,11 @@ module Acl9
         
       role_checks = args.map do |who|
         case who
-        when nil   then "#{@subject}.nil?"    # anonymous
-        when false then "!#{@subject}.nil?"   # logged_in
+        when nil   then "#{_subject_ref}.nil?"    # anonymous
+        when false then "!#{_subject_ref}.nil?"   # logged_in
         when true  then "true"                # all
         else
-          "!#{@subject}.nil? && #{@subject}.has_role?('#{who.to_s.singularize}', #{object})"
+          "!#{_subject_ref}.nil? && #{_subject_ref}.has_role?('#{who.to_s.singularize}', #{object})"
         end
       end
 
@@ -190,11 +190,11 @@ module Acl9
 
       case action_list.size
       when 0 then "true"
-      when 1 then "(controller.action_name == '#{action_list.first}')"
+      when 1 then "(#{_controller_ref}action_name == '#{action_list.first}')"
       else
         set_of_actions = "Set.new([" + action_list.map { |act| "'#{act}'"}.join(',')  + "])"
 
-        "#{set_of_actions}.include?(controller.action_name)" 
+        "#{set_of_actions}.include?(#{_controller_ref}action_name)" 
       end
     end
 
@@ -215,13 +215,29 @@ module Acl9
       when Class
         object.to_s
       when Symbol
-        "controller.instance_variable_get('@#{object}')"
+        _object_ref object
       when nil
         "nil"
       else
         raise ArgumentError, "object specified by preposition can only be a Class or a Symbol"
       end
     end 
+
+    def _subject_ref
+      "#{_controller_ref}send(:#{@subject_method})"
+    end
+
+    def _object_ref(object)
+      "#{_controller_ref}instance_variable_get('@#{object}')"
+    end
+
+    def _access_denied
+      "raise Acl9::AccessDenied"
+    end
+
+    def _controller_ref
+      @controller ? "#{@controller}." : ''
+    end
 
     def _allowance_check_expression
       allowed_expr = if @allows.size > 0

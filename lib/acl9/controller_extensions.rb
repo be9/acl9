@@ -32,11 +32,15 @@ module Acl9
 
         raise ArgumentError, "Block must be supplied to access_control" unless block
 
-        producer = Acl9::FilterProducer.new(subject_method)
-        producer.acl(&block)
-
         filter = opts.delete(:filter)
         filter = true if filter.nil?
+
+        method = opts.delete(:as_method)
+
+        controller = method ? nil : 'controller'
+
+        producer = Acl9::FilterProducer.new(subject_method, controller)
+        producer.acl(&block)
 
         if opts.delete(:debug)
           Rails::logger.debug "=== Acl9 access_control expression dump (#{self.to_s})"
@@ -44,7 +48,7 @@ module Acl9
           Rails::logger.debug "======"
         end
 
-        if method = opts.delete(:as_method)
+        if method
           class_eval producer.to_method_code(method, filter)
 
           before_filter(method, opts) if filter
