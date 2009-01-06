@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'controller_extensions', 'filter_producer')
+require File.join(File.dirname(__FILE__), 'controller_extensions', 'generators')
 
 module Acl9
   module ControllerExtensions
@@ -37,24 +37,24 @@ module Acl9
 
         method = opts.delete(:as_method)
 
-        controller = method ? nil : 'controller'
+        generator = case
+                    when method && filter
+                      Acl9::Dsl::Generators::FilterMethod.new(subject_method, method)
+                    when method && !filter
+                      Acl9::Dsl::Generators::BooleanMethod.new(subject_method, method)
+                    else
+                      Acl9::Dsl::Generators::FilterLambda.new(subject_method)
+                    end
 
-        producer = Acl9::FilterProducer.new(subject_method, controller)
-        producer.acl(&block)
-
+        generator.acl_block!(&block)
+        
         if opts.delete(:debug)
           Rails::logger.debug "=== Acl9 access_control expression dump (#{self.to_s})"
-          Rails::logger.debug producer.to_s
+          Rails::logger.debug generator.to_s
           Rails::logger.debug "======"
         end
 
-        if method
-          class_eval producer.to_method_code(method, filter)
-
-          before_filter(method, opts) if filter
-        else
-          before_filter(opts, &producer.to_proc)
-        end
+        generator.install_on(self, opts)
       end
     end
   end

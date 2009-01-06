@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
+require File.join(File.dirname(__FILE__), '..', 'lib', 'acl9')
 require File.join(File.dirname(__FILE__), 'models')
 
 #Logger = ActiveRecord::Base.logger
