@@ -199,6 +199,33 @@ describe ACLSubjectMethod, :type => :controller do
   end
 end
 
+class ACLObjectsHash < ActionController::Base
+  access_control :allowed?, :filter => false do
+    allow :owner, :of => :foo
+  end
+
+  def allow
+    @foo = nil
+    raise unless allowed?(:foo => MyDearFoo.instance)
+  end
+  
+  def current_user
+    params[:user]
+  end
+end
+
+describe ACLObjectsHash, :type => :controller do
+  class FooOwner
+    def has_role?(role_name, obj)
+      role_name == 'owner' && obj == MyDearFoo.instance
+    end
+  end
+
+  it "should consider objects hash and prefer it to @ivar" do
+    get :allow, :user => FooOwner.new
+  end
+end
+
 describe "Argument checking" do
   def arg_err(&block)
     lambda do

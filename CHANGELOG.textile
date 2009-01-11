@@ -1,6 +1,8 @@
 h2. 0.9.2 (yet unreleased)
 
 * @access_control :method do end@ as shorter form for @access_control :as_method => :method do end@.
+* Boolean method can now receive an objects hash which will be looked into first before taking
+  an instance variable.
 
 h2. 0.9.1 (03-Jan-2009)
 

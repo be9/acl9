@@ -709,12 +709,14 @@ to @access_control@:
 
 h3. :filter
 
-If you set @:filter@ to @false@ (it's @true@ by default) and also use @:as_method@, you'll get a method
-which won't raise @Acl9::AccessDenied@ exception, but rather return @true@ or @false@ (access allowed/denied).
+If you set @:filter@ to @false@ (it's @true@ by default) and also use
+@:as_method@ (or method name as 1st argument to @access_control@, you'll get a
+method which won't raise @Acl9::AccessDenied@ exception, but rather return
+@true@ or @false@ (access allowed/denied).
 
 <pre><code>
   class SecretController < ApplicationController 
-    access_control :as_method => :secret_access?, :filter => false do
+    access_control :secret_access?, :filter => false do
       allow :james_bond
       # ...
     end
@@ -740,6 +742,26 @@ which won't raise @Acl9::AccessDenied@ exception, but rather return @true@ or @f
     end
   end
 </code></pre>
+
+The generated method can receive an objects hash as an argument. In this example,
+
+<pre><code>
+  class LolController < ApplicationController 
+    access_control :lolcats?, :filter => false do
+      allow :cats, :by => :lol
+      # ...
+    end
+  end
+</code></pre>
+
+you may not only call @lolcats?@ with no arguments, which will basically return
+
+<pre><code>
+  current_user.has_role?('cats', @lol)
+</code></pre>
+
+but also as @lolcats?(:lol => Lol.find(params[:lol]))@. The hash will be looked into first,
+even if you have an instance variable @lol@.
 
 h3. Other options
 
