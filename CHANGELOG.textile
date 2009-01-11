@@ -1,4 +1,4 @@
-h2. 0.9.2 (yet unreleased)
+h2. 0.9.2 (11-Jan-2009)
 
 * @access_control :method do end@ as shorter form for @access_control :as_method => :method do end@.
 * Boolean method can now receive an objects hash which will be looked into first before taking
