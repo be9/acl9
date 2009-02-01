@@ -17,7 +17,7 @@ begin
     p.summary = "Yet another role-based authorization system for Rails with a nice DSL for access control lists."
     p.url = "http://github.com/be9/acl9"
     p.ignore_pattern = ["spec/db/*.sqlite3", "spec/debug.log"]
-    p.development_dependencies = ["rspec >=1.1.11", "rspec-rails >=1.1.11"]
+    p.development_dependencies = ["rspec >=1.1.12", "rspec-rails >=1.1.12"]
   end
 rescue LoadError => boom
   puts "You are missing a dependency required for meta-operations on this gem."

@@ -1,14 +1,20 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 require File.join(File.dirname(__FILE__), '..', 'lib', 'acl9')
 
-class EmptyController < ActionController::Base
+class ApplicationController
+  rescue_from Acl9::AccessDenied do |e|
+    render :text => 'AccessDenied'
+  end
+end
+
+class EmptyController < ApplicationController
   attr_accessor :current_user
   before_filter :set_current_user
 
   [:index, :show, :new, :edit, :update, :delete, :destroy].each do |act|
-    define_method(act) {}
+    define_method(act) { render :text => 'OK' }
   end
-  
+
   private
 
   def set_current_user
@@ -27,7 +33,7 @@ end
 # all these controllers behave the same way
 
 class ACLBlock < EmptyController
-  access_control do
+  access_control :debug => true do
     allow all, :to => [:index, :show]
     allow :admin
   end
@@ -74,20 +80,21 @@ describe "permit anonymous to index and show and admin everywhere else", :shared
   [:index, :show].each do |act|
     it "should permit anonymous to #{act}" do
       get act 
+      response.body.should == 'OK'
     end
   end
 
   [:new, :edit, :update, :delete, :destroy].each do |act|
     it "should forbid anonymous to #{act}" do
-      lambda do
-        get act 
-      end.should raise_error(Acl9::AccessDenied)
+      get act 
+      response.body.should == 'AccessDenied'
     end
   end
   
   [:index, :show, :new, :edit, :update, :delete, :destroy].each do |act|
     it "should permit admin to #{act}" do
       get act, :user => Admin.new
+      response.body.should == 'OK'
     end
   end
 end
@@ -158,10 +165,12 @@ describe ACLIvars, :type => :controller do
 
   it "should allow owner of foo to destroy" do
     delete :destroy, :user => OwnerOfFoo.new
+    response.body.should == 'OK'
   end
   
   it "should allow bartender to destroy" do
     delete :destroy, :user => Bartender.new
+    response.body.should == 'OK'
   end
 end
 
@@ -173,12 +182,14 @@ class TheOnlyUser
   end
 end
 
-class ACLSubjectMethod < ActionController::Base
+class ACLSubjectMethod < ApplicationController
   access_control :subject_method => :the_only_user do
     allow :the_only_one
   end
 
-  def index; end
+  def index
+    render :text => 'OK'
+  end
 
   private
 
@@ -190,23 +201,23 @@ end
 describe ACLSubjectMethod, :type => :controller do
   it "should allow the only user to index" do
     get :index, :user => TheOnlyUser.instance
+    response.body.should == 'OK'
   end
   
   it "should deny anonymous to index" do
-    lambda do
-      get :index
-    end.should raise_error(Acl9::AccessDenied)
+    get :index
+    response.body.should == 'AccessDenied'
   end
 end
 
-class ACLObjectsHash < ActionController::Base
+class ACLObjectsHash < ApplicationController
   access_control :allowed?, :filter => false do
     allow :owner, :of => :foo
   end
 
   def allow
     @foo = nil
-    raise unless allowed?(:foo => MyDearFoo.instance)
+    render :text => (allowed?(:foo => MyDearFoo.instance) ? 'OK' : 'AccessDenied')
   end
   
   def current_user
@@ -223,6 +234,7 @@ describe ACLObjectsHash, :type => :controller do
 
   it "should consider objects hash and prefer it to @ivar" do
     get :allow, :user => FooOwner.new
+    response.body.should == 'OK'
   end
 end
 
@@ -235,7 +247,7 @@ describe "Argument checking" do
 
   it "should raise ArgumentError without a block" do
     arg_err do
-      class FailureController < ActionController::Base
+      class FailureController < ApplicationController
         access_control 
       end
     end
@@ -243,7 +255,7 @@ describe "Argument checking" do
   
   it "should raise ArgumentError with 1st argument which is not a symbol" do
     arg_err do
-      class FailureController < ActionController::Base
+      class FailureController < ApplicationController
         access_control 123 do end
       end
     end
@@ -251,7 +263,7 @@ describe "Argument checking" do
   
   it "should raise ArgumentError with more than 1 positional argument" do
     arg_err do
-      class FailureController < ActionController::Base
+      class FailureController < ApplicationController
         access_control :foo, :bar do end
       end
     end
