@@ -256,5 +256,8 @@ describe "Roles with custom class names" do
 
     @subj.has_role?(:user, @foobar).should be_true
     @subj2.has_role?(:user, @foobar).should be_false
+
+    @subj.has_no_roles!
+    @subj2.has_no_roles!
   end
 end

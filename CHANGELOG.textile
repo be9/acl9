@@ -1,3 +1,7 @@
+h2. 0.9.3 (?)
+
+* Fix bug in delete_role - didn't work with custom class names
+
 h2. 0.9.2 (11-Jan-2009)
 
 * @access_control :method do end@ as shorter form for @access_control :as_method => :method do end@.
