@@ -1,0 +1,58 @@
+* Complex roles with ANDing.
+
+  Something like:
+
+    access_control do
+      allow all, :except => :destroy
+      allow complex_role, :to => :destroy do
+        is :strong
+        is :decisive
+        is :owner, :of => :object
+        is_not :banned
+        is_not :fake
+      end
+    end
+
+* Add helper_method call.
+
+    access_control :helper => :can_see? do
+      allow :owner, :of => :foo, :to => [:show, :index]
+    end
+
+  will work exactly as 
+
+    access_control :can_see?, :filter => false do
+      allow :owner, :of => :foo, :to => [:show, :index]
+    end
+
+    helper_method :can_see?
+
+  and provide :can_see? method in a view.
+
+* Acl9-based menu generator.
+
+  If you get Access Denied on /secrets/index, probably you shouldn't see "Secrets" item
+  in the menu at all.
+
+  It can be very DRY. Say, we introduce :menu => true option to access_control method which
+  will make it register a lambda (can see/cannot see) in some global hash (indexed by controller name).
+
+  Then, given an URL, you'll be able to check it against this hash. /secrets/index is mapped to
+  SecretsController#index, so you run access_control_hash['SecretsController'].call('index') and
+  show the link only if true is returned.
+
+  The problem here is with objects. SecretsController's access_control block can reference instance 
+  variables during the permission check, but we have only current instantiated controller which can be any.
+
+  Another option is to distinguish visible part from access control part.
+
+    menu do 
+      item 'Home', home_path
+      item 'Secrets', secrets_path do
+        allow :trusted
+      end
+
+      # ...
+    end
+
+  Here only "trusted" users will see "Secrets" item.
