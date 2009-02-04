@@ -8,11 +8,7 @@ module Acl9
 
     module ClassMethods
       def access_control(*args, &block)
-        opts = if args.last.is_a? Hash
-                 args.pop
-               else
-                 {}
-               end
+        opts = args.extract_options!
 
         case args.size
         when 0 then true
@@ -22,20 +18,33 @@ module Acl9
           if meth.is_a? Symbol
             opts[:as_method] = meth
           else
-            raise ArgumentError, "access control argument must be a :symbol!"
+            raise ArgumentError, "access_control argument must be a :symbol!"
           end
         else
           raise ArgumentError, "Invalid arguments for access_control"
         end
 
-        subject_method = opts.delete(:subject_method) || Acl9::config[:default_subject_method]
+        subject_method = opts[:subject_method] || Acl9::config[:default_subject_method]
 
         raise ArgumentError, "Block must be supplied to access_control" unless block
 
-        filter = opts.delete(:filter)
+        filter = opts[:filter]
         filter = true if filter.nil?
 
-        method = opts.delete(:as_method)
+        case helper = opts[:helper]
+        when true
+          raise ArgumentError, "you should specify :helper => :method_name" if !opts[:as_method]
+        when nil then nil
+        else
+          if opts[:as_method]
+            raise ArgumentError, "you can't specify both method name and helper name" 
+          else
+            opts[:as_method] = helper
+            filter = false
+          end
+        end
+
+        method = opts[:as_method]
 
         generator = case
                     when method && filter
@@ -48,12 +57,6 @@ module Acl9
 
         generator.acl_block!(&block)
         
-        if opts.delete(:debug)
-          Rails::logger.debug "=== Acl9 access_control expression dump (#{self.to_s})"
-          Rails::logger.debug generator.to_s
-          Rails::logger.debug "======"
-        end
-
         generator.install_on(self, opts)
       end
     end

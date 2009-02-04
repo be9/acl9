@@ -763,6 +763,33 @@ you may not only call @lolcats?@ with no arguments, which will basically return
 but also as @lolcats?(:lol => Lol.find(params[:lol]))@. The hash will be looked into first,
 even if you have an instance variable @lol@.
 
+h3. :helper
+
+Sometimes you want to have a boolean method (like @:filter => false@) accessible
+in your views. Acl9 can call @helper_method@ for you:
+
+<pre><code>
+  class LolController < ApplicationController 
+    access_control :helper => :lolcats? do
+      allow :cats, :by => :lol
+      # ...
+    end
+  end
+</code></pre>
+
+That's equivalent to
+
+<pre><code>
+  class LolController < ApplicationController 
+    access_control :lolcats?, :filter => false do
+      allow :cats, :by => :lol
+      # ...
+    end
+
+    helper_method :lolcats?
+  end
+</code></pre>
+
 h3. Other options
 
 Other options will be passed to @before_filter@. As such, you may use @:only@ and @:except@ to narrow
@@ -796,6 +823,32 @@ is basically equivalent to
   end
 </code></pre>
 
+h2. access_control in your helpers
+
+Apart from using @:helper@ option for @access_control@ call inside controller, there's a
+way to generate helper methods directly, like this:
+
+<pre><code>
+  module SettingsHelper
+    include Acl9Helpers
+
+    access_control :show_settings? do
+      allow :admin
+      allow :settings_manager
+    end
+  end
+</code></pre>
+
+Here we mix in @Acl9Helpers@ module which brings in @access_control@ method and call it,
+obtaining @show_settings?@ method. 
+
+An imaginary view:
+
+<pre><code>
+  <% if show_settings? %>
+    <%= link_to 'Settings', settings_path %>
+  <% end %>
+</code></pre>
 
 Copyright (c) 2009 Oleg Dashevskii, released under the MIT license.
 

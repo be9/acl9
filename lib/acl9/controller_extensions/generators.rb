@@ -34,6 +34,16 @@ module Acl9
         def _controller_ref
           @controller ? "#{@controller}." : ''
         end
+
+        def install_on(controller_class, options)
+          debug_dump(controller_class) if options[:debug]
+        end
+
+        def debug_dump(klass)
+          Rails::logger.debug "=== Acl9 access_control expression dump (#{klass.to_s})"
+          Rails::logger.debug self.to_s
+          Rails::logger.debug "======"
+        end
       end
 
       class FilterLambda < BaseGenerator
@@ -44,6 +54,8 @@ module Acl9
         end
 
         def install_on(controller_class, options)
+          super
+
           controller_class.send(:before_filter, options, &self.to_proc)
         end
 
@@ -71,6 +83,7 @@ module Acl9
         end
         
         def install_on(controller_class, options)
+          super
           _add_method(controller_class)
           controller_class.send(:before_filter, @method_name, options)
         end
@@ -96,8 +109,14 @@ module Acl9
       end
       
       class BooleanMethod < FilterMethod
-        def install_on(controller_class, *_)
+        def install_on(controller_class, opts)
+          debug_dump(controller_class) if opts[:debug]
+
           _add_method(controller_class)
+
+          if opts[:helper]
+            controller_class.send(:helper_method, @method_name)
+          end
         end
 
         protected 
@@ -112,6 +131,14 @@ module Acl9
 
         def _object_ref(object)
           "(options[:#{object}] || #{super})"
+        end
+      end
+
+      class HelperMethod < BooleanMethod
+        def initialize(subject_method, method)
+          super
+
+          @controller = 'controller'
         end
       end
     end
