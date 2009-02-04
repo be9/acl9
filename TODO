@@ -13,22 +13,6 @@
       end
     end
 
-* Add helper_method call.
-
-    access_control :helper => :can_see? do
-      allow :owner, :of => :foo, :to => [:show, :index]
-    end
-
-  will work exactly as 
-
-    access_control :can_see?, :filter => false do
-      allow :owner, :of => :foo, :to => [:show, :index]
-    end
-
-    helper_method :can_see?
-
-  and provide :can_see? method in a view.
-
 * Acl9-based menu generator.
 
   If you get Access Denied on /secrets/index, probably you shouldn't see "Secrets" item
