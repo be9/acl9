@@ -538,6 +538,30 @@ below). You can also use @:only@ and @:except@ options in the
 @access_control@ call which will serve as options of the @before_filter@ and thus
 limit the scope of the whole ACL.
 
+h3. Rule conditions
+
+You may create conditional rules using @:if@ and @:unless@ options.
+
+<pre><code>
+  allow :owner, :of => :site, :to => [:delete, :destroy], :if => :chance_to_delete
+</code></pre>
+
+Controller's @:chance_to_delete@ method will be called here. The rule will match if the action
+is 'delete' or 'destroy' AND if the method returned @true@.
+
+@:unless@ has the opposite meaning and should return @false@ for a rule to match.
+
+Both options can be specified in the same rule.
+
+<pre><code>
+  allow :visitor, :to => [:index, :show], :if => :right_phase_of_the_moon?, :unless => :suspicious?
+</code></pre>
+
+@right_phase_of_the_moon?@ should return @true@ AND @suspicious?@ should return @false@ for a poor visitor to
+see a page.
+
+Currently only controller methods are supported (specify them as :symbols). Lambdas are *not* supported.
+
 h2. Rule matching order
 
 Rule matching system is similar to that of Apache web server. There are two modes: _default allow_

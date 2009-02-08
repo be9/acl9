@@ -31,6 +31,10 @@ module Acl9
           "#{_controller_ref}action_name"
         end
 
+        def _method_ref(method)
+          "#{_controller_ref}send(:#{method})"
+        end
+
         def _controller_ref
           @controller ? "#{@controller}." : ''
         end

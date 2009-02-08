@@ -1,3 +1,4 @@
+require 'ostruct'
 require File.join(File.dirname(__FILE__), 'spec_helper')
 require File.join(File.dirname(__FILE__), '..', 'lib', 'acl9', 'controller_extensions', 'dsl_base')
 
@@ -54,6 +55,7 @@ class DslTester < Acl9::Dsl::Base
     @_subject = subject
     @_current_action = (args[0] || 'index').to_s
     @_objects = args.last.is_a?(Hash) ? args.last : {}
+    @_callable = @_objects.delete(:call)
 
     instance_eval(allowance_expression)
   end
@@ -63,17 +65,21 @@ class DslTester < Acl9::Dsl::Base
   end
 
   def _object_ref(object)
-    "@_objects[:#{object.to_s}]"
+    "@_objects[:#{object}]"
   end
 
   def _action_ref
     "@_current_action"
   end
+
+  def _method_ref(method)
+    "@_callable.send(:#{method})"
+  end
 end
 
 describe Acl9::Dsl::Base do
-  class Foo; end
-  class Bar; end
+  class ThatFoo; end
+  class ThatBar; end
 
   def arg_err(&block)
     lambda do
@@ -97,9 +103,9 @@ describe Acl9::Dsl::Base do
     @user = FakeUser.new
     @user2 = FakeUser.new
     @user3 = FakeUser.new
-    @foo = Foo.new
-    @foo2 = Foo.new
-    @foo3 = Foo.new
+    @foo = ThatFoo.new
+    @foo2 = ThatFoo.new
+    @foo3 = ThatFoo.new
   end
 
   describe "default" do
@@ -368,7 +374,7 @@ describe Acl9::Dsl::Base do
         end.
         permit(@user, :foo => @foo).
         forbid(@user, :foo => @foo2).
-        forbid(@user, :foo => Foo).
+        forbid(@user, :foo => ThatFoo).
         forbid(nil, :foo => @foo).
         forbid(@user2, :foo => @foo)
       end
@@ -381,10 +387,10 @@ describe Acl9::Dsl::Base do
     end
 
     it "#allow with a class role should verify this role against a class" do
-      @user << [:owner, Foo]
+      @user << [:owner, ThatFoo]
 
       acl do
-        allow :owner, :of => Foo
+        allow :owner, :of => ThatFoo
       end.permit(@user).forbid(nil).forbid(@user2)
     end
     
@@ -398,7 +404,7 @@ describe Acl9::Dsl::Base do
         end.
         forbid(@user, :foo => @foo).
         permit(@user, :foo => @foo2).
-        permit(@user, :foo => Foo).
+        permit(@user, :foo => ThatFoo).
         permit(nil, :foo => @foo).
         permit(@user2, :foo => @foo)
       end
@@ -411,11 +417,11 @@ describe Acl9::Dsl::Base do
     end
 
     it "#deny with a class role should verify this role against a class" do
-      @user << [:ignorant, Foo]
+      @user << [:ignorant, ThatFoo]
 
       acl do
         default :allow
-        deny :ignorant, :of => Foo
+        deny :ignorant, :of => ThatFoo
       end.forbid(@user).permit(nil).permit(@user2)
     end
 
@@ -477,6 +483,51 @@ describe Acl9::Dsl::Base do
     end
   end
 
+  describe "conditions" do
+    [:if, :unless].each do |cond|
+      it "should raise ArgumentError when #{cond} is not a Symbol" do
+        arg_err do
+          allow nil, cond => 123
+        end
+      end
+    end
+
+    it "allow ... :if" do
+      acl do
+        allow nil, :if => :meth
+      end.
+      permit(nil, :call => OpenStruct.new(:meth => true)).
+      forbid(nil, :call => OpenStruct.new(:meth => false))
+    end
+    
+    it "allow ... :unless" do
+      acl do
+        allow nil, :unless => :meth
+      end.
+      permit(nil, :call => OpenStruct.new(:meth => false)).
+      forbid(nil, :call => OpenStruct.new(:meth => true))
+    end
+    
+    it "deny ... :if" do
+      acl do
+        default :allow
+        deny nil, :if => :meth
+      end.
+      permit(nil, :call => OpenStruct.new(:meth => false)).
+      forbid(nil, :call => OpenStruct.new(:meth => true))
+    end
+
+    it "deny ... :unless" do
+      acl do
+        default :allow
+        deny nil, :unless => :meth
+      end.
+      permit(nil, :call => OpenStruct.new(:meth => true)).
+      forbid(nil, :call => OpenStruct.new(:meth => false))
+    end
+
+  end
+
   describe "several roles as arguments" do
     it "#allow should be able to receive a role list (global roles)" do
       @user << :bzz
@@ -504,12 +555,12 @@ describe Acl9::Dsl::Base do
     end
     
     it "#allow should be able to receive a role list (class roles)" do
-      @user  << [:frooble, Foo]
-      @user2 << [:oombigle, Foo]
+      @user  << [:frooble, ThatFoo]
+      @user2 << [:oombigle, ThatFoo]
       @user3 << :frooble
 
       acl do
-        allow :frooble, :oombigle, :by => Foo
+        allow :frooble, :oombigle, :by => ThatFoo
       end.
       permit(@user).
       permit(@user2).
@@ -546,13 +597,13 @@ describe Acl9::Dsl::Base do
     end
     
     it "#deny should be able to receive a role list (class roles)" do
-      @user  << [:frooble, Foo]
-      @user2 << [:oombigle, Foo]
+      @user  << [:frooble, ThatFoo]
+      @user2 << [:oombigle, ThatFoo]
       @user3 << :frooble
 
       acl do
         default :allow
-        deny :frooble, :oombigle, :by => Foo
+        deny :frooble, :oombigle, :by => ThatFoo
       end.
       forbid(@user).
       forbid(@user2).
@@ -670,7 +721,7 @@ describe Acl9::Dsl::Base do
     end
 
     it "#allow and #deny should work together inside actions block" do
-      @foo = Foo.new
+      @foo = ThatFoo.new
       @user << [:owner, @foo]
       @user2 << :hacker
       @user2 << :the_destroyer

@@ -21,6 +21,13 @@ class EmptyController < ApplicationController
   end
 end
 
+module TrueFalse
+  private
+
+  def true_meth; true end
+  def false_meth; false end
+end
+
 # all these controllers behave the same way
 
 class ACLBlock < EmptyController
@@ -46,14 +53,18 @@ end
 
 class ACLArguments < EmptyController
   access_control :except => [:index, :show] do
-    allow :admin
+    allow :admin, :if => :true_meth, :unless => :false_meth
   end
+  
+  include TrueFalse
 end
 
 class ACLBooleanMethod < EmptyController
   access_control :acl, :filter => false do
-    allow all, :to => [:index, :show]
-    allow :admin
+    allow all, :to => [:index, :show], :if => :true_meth
+    allow :admin,                      :unless => :false_meth
+    allow all,                         :if => :false_meth
+    allow all,                         :unless => :true_meth
   end
 
   before_filter :check_acl
@@ -65,6 +76,8 @@ class ACLBooleanMethod < EmptyController
       raise Acl9::AccessDenied
     end
   end
+
+  include TrueFalse
 end
 
 ###########################################
