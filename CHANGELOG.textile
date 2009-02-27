@@ -1,3 +1,5 @@
+h2. 0.9.4 (27-Feb-2009)
+
 * Introduce :if and :unless rule options.
 
 h2. 0.9.3 (04-Feb-2009)
