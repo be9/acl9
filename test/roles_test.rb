@@ -3,12 +3,9 @@ require File.join(File.dirname(__FILE__), '..', 'lib', 'acl9')
 require 'support/models'
 
 #Logger = ActiveRecord::Base.logger
+load 'support/schema.rb'
 
 class RolesTest < Test::Unit::TestCase
-  before :all do
-    load 'support/schema.rb'
-  end
-
   before do
     Role.destroy_all
     [User, Foo, Bar].each { |model| model.delete_all }
@@ -240,10 +237,6 @@ class RolesTest < Test::Unit::TestCase
 end
 
 class RolesWithCustomClassNamesTest < Test::Unit::TestCase
-  before :all do
-    load 'support/schema.rb'
-  end
-  
   before do
     AnotherRole.destroy_all
     [AnotherSubject, FooBar].each { |model| model.delete_all }
