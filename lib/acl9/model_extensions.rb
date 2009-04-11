@@ -34,7 +34,7 @@ module Acl9
 
         sql_where = <<-'EOS'
           WHERE authorizable_type = '#{self.class.base_class.to_s}'
-          AND authorizable_id = #{id}"
+          AND authorizable_id = #{id}
         EOS
         
         has_many :accepted_roles, :as => :authorizable, :class_name => role, :dependent => :destroy
