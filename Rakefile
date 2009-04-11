@@ -27,3 +27,10 @@ Spec::Rake::SpecTask.new(:spec) do |t|
   t.spec_opts = ['--colour --format progress --loadby mtime --reverse']
   t.spec_files = FileList['spec/**/*_spec.rb']
 end
+
+require 'rake/testtask'
+Rake::TestTask.new(:test) do |test|
+  test.libs << 'lib' << 'test'
+  test.pattern = 'test/**/*_test.rb'
+  test.verbose = false
+end
