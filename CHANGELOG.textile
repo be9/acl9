@@ -1,3 +1,8 @@
+h2. 0.9.5 (03-May-2009)
+
+* Use context+matchy combo for testing
+* Bugfix: unwanted double quote in generated SQL statement
+
 h2. 0.9.4 (27-Feb-2009)
 
 * Introduce :if and :unless rule options.
