@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'action_controller'
 
 require File.join(File.dirname(__FILE__), '..', 'lib', 'acl9')
 

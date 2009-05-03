@@ -44,9 +44,14 @@ module Acl9
         end
 
         def debug_dump(klass)
-          Rails::logger.debug "=== Acl9 access_control expression dump (#{klass.to_s})"
-          Rails::logger.debug self.to_s
-          Rails::logger.debug "======"
+          return unless logger
+          logger.debug "=== Acl9 access_control expression dump (#{klass.to_s})"
+          logger.debug self.to_s
+          logger.debug "======"
+        end
+        
+        def logger
+          ActionController::Base.logger
         end
       end
 
