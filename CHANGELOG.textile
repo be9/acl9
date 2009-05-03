@@ -1,4 +1,4 @@
-h2. 0.9.5 (03-May-2009)
+h2. 0.10.0 (03-May-2009)
 
 * Use context+matchy combo for testing
 * Bugfix: unwanted double quote in generated SQL statement
