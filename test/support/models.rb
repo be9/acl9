@@ -2,15 +2,7 @@ class Role < ActiveRecord::Base
   acts_as_authorization_role
 end
 
-class Other::Role < ActiveRecord::Base
-  acts_as_authorization_role, :join_table_name => "roles_users"
-end
-
 class User < ActiveRecord::Base
-  acts_as_authorization_subject
-end
-
-class Other::User < ActiveRecord::Base, :join_table_name => "roles_users"
   acts_as_authorization_subject
 end
 
@@ -32,4 +24,24 @@ end
 
 class FooBar < ActiveRecord::Base
   acts_as_authorization_object :role_class_name => 'AnotherRole', :subject_class_name => "AnotherSubject"
+end
+
+
+module Other
+
+  class Other::User < ActiveRecord::Base
+    set_table_name "other_users"
+    acts_as_authorization_subject :join_table_name => "other_roles_other_users", :role_class_name => "Other::Role"
+  end
+
+  class Other::Role < ActiveRecord::Base
+    set_table_name "other_roles"
+    acts_as_authorization_role :join_table_name => "other_roles_other_users", :subject_class_name => "Other::User"
+  end
+
+  class Other::FooBar < ActiveRecord::Base
+    set_table_name "other_foo_bars"
+    acts_as_authorization_object :role_class_name => 'Other::Role', :subject_class_name => "Other::User"
+  end
+
 end

@@ -218,10 +218,8 @@ class RolesTest < Test::Unit::TestCase
     @user.has_role?(:_3133t).should be_true
     @user.has_role?(:admin, Foo).should be_true
     @user.has_role?(:manager, @foo).should be_true
-
-
   end
-
+  
   private
 
   def set_some_roles
@@ -260,6 +258,36 @@ class RolesWithCustomClassNamesTest < Test::Unit::TestCase
 
     @subj.has_no_roles!
     @subj2.has_no_roles!
+  end
+end
+
+class UsersRolesAndSubjectsWithNamespacedClassNamesTest < Test::Unit::TestCase
+  before do
+    Other::Role.destroy_all
+    [Other::User, Other::FooBar].each { |model| model.delete_all }
+
+    @user = Other::User.create!
+    @user2 = Other::User.create!
+    @foobar = Other::FooBar.create!
+    
+  end
+
+  it "should basically work" do
+    lambda do 
+      @user.has_role!('admin')
+      @user.has_role!('user', @foobar)
+    end.should change { Other::Role.count }.from(0).to(2)
+
+    @user.has_role?('admin').should be_true
+    @user2.has_role?('admin').should be_false
+
+    @user.has_role?(:user, @foobar).should be_true
+    @user2.has_role?(:user, @foobar).should be_false
+
+    @foobar.accepted_roles.count.should == 1
+
+    @user.has_no_roles!
+    @user2.has_no_roles!
   end
 end
 

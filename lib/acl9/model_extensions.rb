@@ -21,11 +21,11 @@ module Acl9
 
       def acts_as_authorization_object(options = {})
         subject = options[:subject_class_name] || Acl9::config[:default_subject_class_name]
-        subj_table = subject.tableize
+        subj_table = subject.constantize.table_name
         subj_col = subject.underscore
 
         role       = options[:role_class_name] || Acl9::config[:default_role_class_name]
-        role_table = role.tableize
+        role_table = role.constantize.table_name
 
         sql_tables = <<-EOS
           FROM #{subj_table}

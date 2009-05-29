@@ -93,7 +93,7 @@ module Acl9
         if role
           self.roles.delete role
 
-          role.destroy if role.send(self.class.to_s.tableize).empty?
+          role.destroy if role.send(self.class.to_s.demodulize.tableize).empty?
         end
       end
 
