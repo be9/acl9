@@ -3,3 +3,5 @@
 pkg
 *.sw?
 *.log
+.yardoc
+doc

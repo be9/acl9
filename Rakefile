@@ -27,3 +27,13 @@ Rake::TestTask.new(:test) do |test|
   test.pattern = 'test/**/*_test.rb'
   test.verbose = false
 end
+
+begin
+  require 'yard'
+
+  YARD::Rake::YardocTask.new do |t|
+    t.files   = ['lib/**/*.rb']
+    #t.options = ['--any', '--extra', '--opts'] # optional
+  end
+rescue LoadError
+end

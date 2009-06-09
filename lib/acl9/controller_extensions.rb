@@ -56,7 +56,7 @@ module Acl9
                     end
 
         generator.acl_block!(&block)
-        
+
         generator.install_on(self, opts)
       end
     end
