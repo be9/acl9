@@ -40,11 +40,11 @@ An example:
 
 h1. Contacts
 
-Acl9 is hosted on the GitHub: http://github.com/be9/acl9
+Acl9 is hosted "on the GitHub":http://github.com/be9/acl9.
 
-You may find tutorials and additional docs on the "wiki page":http://wiki.github.com/be9/acl9
+You may find tutorials and additional docs on the "wiki page":http://wiki.github.com/be9/acl9.
 
-Rdocs are available here: http://rdoc.info/projects/be9/acl9
+Rdocs are available "here":http://rdoc.info/projects/be9/acl9.
 
 If you have questions, please post to the 
 "acl9-discuss group":http://groups.google.com/group/acl9-discuss
