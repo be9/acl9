@@ -95,9 +95,13 @@ module Acl9
 
       alias action actions
 
+      def logged_in; false end
       def anonymous; nil   end
       def all;       true  end
-      def logged_in; false end
+
+      alias everyone all
+      alias everybody all
+      alias anyone all
 
       def _parse_and_add_rule(*args)
         options = args.extract_options!

@@ -192,17 +192,19 @@ class DslBaseTest < Test::Unit::TestCase
   end
 
   describe "all" do
-    it "'allow all' should allow all" do
-      acl do
-        allow all
-      end.permit(nil).permit(@user)
-    end
+    [:all, :everyone, :everybody, :anyone].each do |pseudorole|
+      it "'allow #{pseudorole}' should allow all" do
+        acl do
+          allow send(pseudorole)
+        end.permit(nil).permit(@user)
+      end
 
-    it "'deny all' should deny all" do
-      acl do
-        default :allow
-        deny all
-      end.forbid(nil).forbid(@user)
+      it "'deny #{pseudorole}' should deny all" do
+        acl do
+          default :allow
+          deny send(pseudorole)
+        end.forbid(nil).forbid(@user)
+      end
     end
   end
 
