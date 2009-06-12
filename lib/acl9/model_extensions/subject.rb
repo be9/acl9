@@ -35,7 +35,7 @@ module Acl9
                        else            { :authorizable => object }
                        end.merge(      { :name => role_name.to_s })
 
-          role = self._auth_role_class.create(role_attrs)          
+          role = self._auth_role_class.create(role_attrs)
         end
 
         self.roles << role if role && !self.roles.exists?( role.id )
@@ -89,7 +89,7 @@ module Acl9
       ##
       # Unassign all roles from +self+.
       def has_no_roles!
-        # for some reason simple 
+        # for some reason simple
         #
         #   self.roles.each { |role| delete_role(role) }
         #
@@ -108,8 +108,8 @@ module Acl9
         when nil
           lambda { |role| role.authorizable.nil? }
         else
-          lambda do |role| 
-            role.authorizable_type == object.class.base_class.to_s && role.authorizable == object 
+          lambda do |role|
+            role.authorizable_type == object.class.base_class.to_s && role.authorizable == object
           end
         end
       end
@@ -123,16 +123,16 @@ module Acl9
                when nil
                  [ 'name = ? and authorizable_type IS NULL and authorizable_id IS NULL', role_name ]
                else
-                 [ 
+                 [
                    'name = ? and authorizable_type = ? and authorizable_id = ?',
-                   role_name, object.class.base_class.to_s, object.id 
+                   role_name, object.class.base_class.to_s, object.id
                  ]
                end
 
         self._auth_role_class.first :conditions => cond
       end
 
-      def delete_role(role) 
+      def delete_role(role)
         if role
           self.roles.delete role
 

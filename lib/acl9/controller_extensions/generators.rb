@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__), 'dsl_base')
 
 module Acl9
   ##
-  # This exception is raised whenever ACL block finds that the current user 
+  # This exception is raised whenever ACL block finds that the current user
   # is not authorized for the controller action he wants to execute.
   # @example How to catch this exception in ApplicationController
   #   class ApplicationController < ActionController::Base
@@ -77,7 +77,7 @@ module Acl9
           logger.debug self.to_s
           logger.debug "======"
         end
-        
+
         def logger
           ActionController::Base.logger
         end
@@ -104,13 +104,13 @@ module Acl9
               end
             end
           RUBY
-          
+
           self.instance_eval(code, __FILE__, __LINE__)
         rescue SyntaxError
           raise FilterSyntaxError, code
         end
       end
-      
+
       class FilterMethod < BaseGenerator
         def initialize(subject_method, method_name)
           super
@@ -118,7 +118,7 @@ module Acl9
           @method_name = method_name
           @controller = nil
         end
-        
+
         def install_on(controller_class, options)
           super
           _add_method(controller_class)
@@ -133,7 +133,7 @@ module Acl9
         rescue SyntaxError
           raise FilterSyntaxError, code
         end
-        
+
         def to_method_code
           <<-RUBY
             def #{@method_name}
@@ -144,7 +144,7 @@ module Acl9
           RUBY
         end
       end
-      
+
       class BooleanMethod < FilterMethod
         def install_on(controller_class, opts)
           debug_dump(controller_class) if opts[:debug]
@@ -156,8 +156,8 @@ module Acl9
           end
         end
 
-        protected 
-        
+        protected
+
         def to_method_code
           <<-RUBY
             def #{@method_name}(options = {})
