@@ -22,11 +22,21 @@ class Bartender
   end
 end
 
-class TheOnlyUser 
+class TheOnlyUser
   include Singleton
 
   def has_role?(role, subj)
     role == "the_only_one"
+  end
+end
+
+class Beholder
+  def initialize(role)
+    @role = role.to_s
+  end
+
+  def has_role?(role, obj)
+    role.to_s == @role
   end
 end
 
@@ -38,18 +48,18 @@ module BaseTests
     klass.class_eval do
       [:index, :show].each do |act|
         it "should permit anonymous to #{act}" do
-          get act 
+          get act
           @response.body.should == 'OK'
         end
       end
 
       [:new, :edit, :update, :delete, :destroy].each do |act|
         it "should forbid anonymous to #{act}" do
-          get act 
+          get act
           @response.body.should == 'AccessDenied'
         end
       end
-      
+
       [:index, :show, :new, :edit, :update, :delete, :destroy].each do |act|
         it "should permit admin to #{act}" do
           get act, :user => Admin.new
@@ -65,6 +75,10 @@ module ShouldRespondToAcl
     klass.class_eval do
       it "should add :acl as a method" do
         @controller.should respond_to(:acl)
+      end
+
+      it "should_not add :acl? as a method" do
+        @controller.should_not respond_to(:acl?)
       end
     end
   end
@@ -106,12 +120,12 @@ end
 
 class ACLIvarsTest < ActionController::TestCase
   tests ACLIvars
-  
+
   it "should allow owner of foo to destroy" do
     delete :destroy, :user => OwnerOfFoo.new
     @response.body.should == 'OK'
   end
-  
+
   it "should allow bartender to destroy" do
     delete :destroy, :user => Bartender.new
     @response.body.should == 'OK'
@@ -125,7 +139,7 @@ class ACLSubjectMethodTest < ActionController::TestCase
     get :index, :user => TheOnlyUser.instance
     @response.body.should == 'OK'
   end
-  
+
   it "should deny anonymous to index" do
     get :index
     @response.body.should == 'AccessDenied'
@@ -139,7 +153,7 @@ class ACLObjectsHashTest < ActionController::TestCase
     get :allow, :user => OwnerOfFoo.new
     @response.body.should == 'OK'
   end
-  
+
   it "should return AccessDenied when not logged in" do
     get :allow
     @response.body.should == 'AccessDenied'
@@ -153,12 +167,79 @@ class ACLHelperMethodTest < ActionController::TestCase
     get :allow, :user => OwnerOfFoo.new
     @response.body.should == 'OK'
   end
-  
+
   it "should return AccessDenied when not logged in" do
     get :allow
     @response.body.should == 'AccessDenied'
   end
 end
+
+#######################################################################
+
+module ACLQueryMixin
+  def self.included(base)
+    base.class_eval do
+      describe "#acl_question_mark" do      # describe "#acl?" doesn't work
+        before do
+          @editor = Beholder.new(:editor)
+          @viewer = Beholder.new(:viewer)
+        end
+
+        [:edit, :update, :destroy].each do |meth|
+          it "should return true for editor/#{meth}" do
+            @controller.current_user = @editor
+            @controller.acl?(meth).should == true
+            @controller.acl?(meth.to_s).should == true
+          end
+
+          it "should return false for viewer/#{meth}" do
+            @controller.current_user = @viewer
+            @controller.acl?(meth).should == false
+            @controller.acl?(meth.to_s).should == false
+          end
+        end
+
+        [:index, :show].each do |meth|
+          it "should return false for editor/#{meth}" do
+            @controller.current_user = @editor
+            @controller.acl?(meth).should == false
+            @controller.acl?(meth.to_s).should == false
+          end
+
+          it "should return true for viewer/#{meth}" do
+            @controller.current_user = @viewer
+            @controller.acl?(meth).should == true
+            @controller.acl?(meth.to_s).should == true
+          end
+        end
+      end
+    end
+  end
+end
+
+class ACLQueryMethodTest < ActionController::TestCase
+  tests ACLQueryMethod
+
+  it "should respond to :acl?" do
+    @controller.should respond_to(:acl)
+  end
+
+  include ACLQueryMixin
+end
+
+#######################################################################
+
+class ACLNamedQueryMethodTest < ActionController::TestCase
+  tests ACLNamedQueryMethod
+
+  it "should respond to :allow_ay" do
+    @controller.should respond_to(:allow_ay)
+  end
+
+  include ACLQueryMixin
+end
+
+#######################################################################
 
 class ArgumentsCheckingTest < ActiveSupport::TestCase
   def arg_err(&block)
@@ -166,15 +247,15 @@ class ArgumentsCheckingTest < ActiveSupport::TestCase
       block.call
     end.should raise_error(ArgumentError)
   end
-  
+
   it "should raise ArgumentError without a block" do
     arg_err do
       class FailureController < ApplicationController
-        access_control 
+        access_control
       end
     end
   end
-  
+
   it "should raise ArgumentError with 1st argument which is not a symbol" do
     arg_err do
       class FailureController < ApplicationController
@@ -182,7 +263,7 @@ class ArgumentsCheckingTest < ActiveSupport::TestCase
       end
     end
   end
-  
+
   it "should raise ArgumentError with more than 1 positional argument" do
     arg_err do
       class FailureController < ApplicationController
@@ -190,7 +271,7 @@ class ArgumentsCheckingTest < ActiveSupport::TestCase
       end
     end
   end
-  
+
   it "should raise ArgumentError with :helper => true and no method name" do
     arg_err do
       class FailureController < ApplicationController
@@ -198,7 +279,7 @@ class ArgumentsCheckingTest < ActiveSupport::TestCase
       end
     end
   end
-  
+
   it "should raise ArgumentError with :helper => :method and a method name" do
     arg_err do
       class FailureController < ApplicationController
@@ -207,3 +288,4 @@ class ArgumentsCheckingTest < ActiveSupport::TestCase
     end
   end
 end
+

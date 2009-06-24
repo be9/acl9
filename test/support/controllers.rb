@@ -145,9 +145,30 @@ class ACLHelperMethod < ApplicationController
 
     render :inline => "<%= foo? ? 'OK' : 'AccessDenied' %>"
   end
-  
+
   def current_user
     params[:user]
   end
 end
 
+class ACLQueryMethod < ApplicationController
+  attr_accessor :current_user
+
+  access_control :acl, :query_method => true do
+    allow :editor, :to => [:edit, :update, :destroy]
+    allow :viewer, :to => [:index, :show]
+  end
+end
+
+class ACLNamedQueryMethod < ApplicationController
+  attr_accessor :current_user
+
+  access_control :acl, :query_method => 'allow_ay' do
+    allow :editor, :to => [:edit, :update, :destroy]
+    allow :viewer, :to => [:index, :show]
+  end
+
+  def acl?(*args)
+    allow_ay(*args)
+  end
+end

@@ -45,10 +45,11 @@ module Acl9
         end
 
         method = opts[:as_method]
+        query_method = opts[:query_method]
 
         generator = case
                     when method && filter
-                      Acl9::Dsl::Generators::FilterMethod.new(subject_method, method)
+                      Acl9::Dsl::Generators::FilterMethod.new(subject_method, method, query_method)
                     when method && !filter
                       Acl9::Dsl::Generators::BooleanMethod.new(subject_method, method)
                     else
