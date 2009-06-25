@@ -114,12 +114,11 @@ module Acl9
       ################################################################
 
       class FilterMethod < BaseGenerator
-        def initialize(subject_method, method_name, query_meth = nil)
+        def initialize(subject_method, method_name)
           super
 
           @method_name = method_name
           @controller = nil
-          @query_method = (query_meth == true) ? "#{method_name}?" : query_meth
         end
 
         def install_on(controller_class, options)
@@ -138,24 +137,13 @@ module Acl9
         end
 
         def to_method_code
-          code = <<-RUBY
+          <<-RUBY
             def #{@method_name}
               unless #{allowance_expression}
                 #{_access_denied}
               end
             end
           RUBY
-
-          if @query_method
-            code += <<-RUBY
-              def #{@query_method}(action)
-                action_name = action.to_s
-                return #{allowance_expression}
-              end
-            RUBY
-          end
-
-          code
         end
       end
 
@@ -176,8 +164,16 @@ module Acl9
 
         def to_method_code
           <<-RUBY
-            def #{@method_name}(options = {})
-              #{allowance_expression}
+            def #{@method_name}(*args)
+              options = args.extract_options!
+
+              unless args.size <= 1
+                raise ArgumentError, "call #{@method_name} with 0, 1 or 2 arguments"
+              end
+
+              action_name = args.empty? ? self.action_name : args.first.to_s
+
+              return #{allowance_expression}
             end
           RUBY
         end

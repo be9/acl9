@@ -160,6 +160,32 @@ class ACLObjectsHashTest < ActionController::TestCase
   end
 end
 
+class ACLActionOverrideTest < ActionController::TestCase
+  tests ACLActionOverride
+
+  it "should allow index action to anonymous" do
+    get :check_allow, :_action => :index
+    @response.body.should == 'OK'
+  end
+
+  it "should deny show action to anonymous" do
+    get :check_allow, :_action => :show
+    @response.body.should == 'AccessDenied'
+  end
+
+  it "should deny edit action to regular user" do
+    get :check_allow_with_foo, :_action => :edit, :user => TheOnlyUser.instance
+
+    @response.body.should == 'AccessDenied'
+  end
+
+  it "should allow edit action to owner of foo" do
+    get :check_allow_with_foo, :_action => :edit, :user => OwnerOfFoo.new
+
+    @response.body.should == 'OK'
+  end
+end
+
 class ACLHelperMethodTest < ActionController::TestCase
   tests ACLHelperMethod
 
@@ -183,6 +209,7 @@ module ACLQueryMixin
         before do
           @editor = Beholder.new(:editor)
           @viewer = Beholder.new(:viewer)
+          @owneroffoo = OwnerOfFoo.new
         end
 
         [:edit, :update, :destroy].each do |meth|
@@ -212,6 +239,16 @@ module ACLQueryMixin
             @controller.acl?(meth.to_s).should == true
           end
         end
+
+        it "should return false for editor/fooize" do
+          @controller.current_user = @editor
+          @controller.acl?(:fooize).should == false
+        end
+
+        it "should return true for foo owner" do
+          @controller.current_user = @owneroffoo
+          @controller.acl?(:fooize, :foo => MyDearFoo.instance).should == true
+        end
       end
     end
   end
@@ -221,7 +258,17 @@ class ACLQueryMethodTest < ActionController::TestCase
   tests ACLQueryMethod
 
   it "should respond to :acl?" do
-    @controller.should respond_to(:acl)
+    @controller.should respond_to(:acl?)
+  end
+
+  include ACLQueryMixin
+end
+
+class ACLQueryMethodWithLambdaTest < ActionController::TestCase
+  tests ACLQueryMethodWithLambda
+
+  it "should respond to :acl?" do
+    @controller.should respond_to(:acl?)
   end
 
   include ACLQueryMixin

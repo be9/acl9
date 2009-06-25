@@ -1,3 +1,7 @@
+* Fix namespaced models in roles backend (thanks goes to Tomas Jogin)
+* Action name override in boolean methods.
+* @:query_method@ option for @access_control@.
+
 h2. 0.10.0 (03-May-2009)
 
 * Use context+matchy combo for testing
