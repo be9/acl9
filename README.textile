@@ -145,11 +145,10 @@ The structure of @roles@ table is as follows:
 
 <pre><code>
   create_table "roles", :force => true do |t|
-    t.string   "name",              :limit => 40
-    t.string   "authorizable_type", :limit => 40
-    t.integer  "authorizable_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string   :name,              :limit => 40
+    t.string   :authorizable_type, :limit => 40
+    t.integer  :authorizable_id
+    t.timestamps
   end
 </code></pre>
 
@@ -168,10 +167,9 @@ there should be a join table:
 
 <pre><code>
   create_table "roles_users", :id => false, :force => true do |t|
-    t.integer  "user_id"
-    t.integer  "role_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.references  :user
+    t.references  :role
+    t.timestamps
   end
 </code></pre>
 
@@ -280,18 +278,16 @@ Note that you'll need to change your database structure appropriately:
 
 <pre><code>
   create_table "account_roles", :force => true do |t|
-    t.string   "name",              :limit => 40
-    t.string   "authorizable_type", :limit => 40
-    t.integer  "authorizable_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string   :name,              :limit => 40
+    t.string   :authorizable_type, :limit => 40
+    t.integer  :authorizable_id
+    t.timestamps
   end
   
   create_table "account_roles_accounts", :id => false, :force => true do |t|
-    t.integer  "account_id"
-    t.integer  "account_role_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.references  :account
+    t.references  :account_role
+    t.timestamps
   end
 </code></pre>
 
