@@ -111,7 +111,7 @@ class RolesTest < Test::Unit::TestCase
     @user.has_role!('owner', @bar)
     @user2.has_role!('owner', @bar)
 
-    @user.roles.should == @user2.roles
+    @user.acl9_roles.should == @user2.acl9_roles
   end
 
   it "#has_no_role! should unassign a global role from user" do
@@ -119,7 +119,7 @@ class RolesTest < Test::Unit::TestCase
 
     lambda do
       @user.has_no_role!('3133t')
-    end.should change { @user.roles.count }.by(-1)
+    end.should change { @user.acl9_roles.count }.by(-1)
 
     @user.has_role?('3133t').should be_false
   end
@@ -129,7 +129,7 @@ class RolesTest < Test::Unit::TestCase
 
     lambda do
       @user.has_no_role!('manager', @foo)
-    end.should change { @user.roles.count }.by(-1)
+    end.should change { @user.acl9_roles.count }.by(-1)
 
     @user.has_role?('manager', @foo).should be_false
     @user.has_role?('user', @foo).should be_true      # another role on the same object
@@ -140,7 +140,7 @@ class RolesTest < Test::Unit::TestCase
 
     lambda do
       @user.has_no_role!('admin', Foo)
-    end.should change { @user.roles.count }.by(-1)
+    end.should change { @user.acl9_roles.count }.by(-1)
 
     @user.has_role?('admin', Foo).should be_false
     @user.has_role?('admin').should be_true           # global role
@@ -151,7 +151,7 @@ class RolesTest < Test::Unit::TestCase
 
     lambda do
       @user.has_no_roles_for!
-    end.should change { @user.roles.count }.by(-4)
+    end.should change { @user.acl9_roles.count }.by(-4)
 
     @user.has_role?('admin').should be_false
     @user.has_role?('3133t').should be_false
@@ -164,7 +164,7 @@ class RolesTest < Test::Unit::TestCase
 
     lambda do
       @user.has_no_roles_for! @foo
-    end.should change { @user.roles.count }.by(-2)
+    end.should change { @user.acl9_roles.count }.by(-2)
 
     @user.has_role?('user', @foo).should be_false
     @user.has_role?('manager', @foo).should be_false
@@ -175,7 +175,7 @@ class RolesTest < Test::Unit::TestCase
 
     lambda do
       @user.has_no_roles_for! Foo
-    end.should change { @user.roles.count }.by(-4)
+    end.should change { @user.acl9_roles.count }.by(-4)
 
     @user.has_role?('admin', Foo).should be_false
     @user.has_role?('manager', Foo).should be_false
@@ -187,7 +187,7 @@ class RolesTest < Test::Unit::TestCase
     set_some_roles
 
     @user.has_no_roles!
-    @user.roles.count.should == 0
+    @user.acl9_roles.count.should == 0
   end
 
   it "should delete unused roles from table" do

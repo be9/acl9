@@ -11,11 +11,11 @@ module Acl9
       # @see Acl9::ModelExtensions::Object#accepts_role?
       def has_role?(role_name, object = nil)
         !! if object.nil?
-          self.roles.find_by_name(role_name.to_s) ||
-          self.roles.member?(get_role(role_name, nil))
+          self.acl9_roles.find_by_name(role_name.to_s) ||
+          self.acl9_roles.member?(get_role(role_name, nil))
         else
           role = get_role(role_name, object)
-          role && self.roles.exists?(role.id)
+          role && self.acl9_roles.exists?(role.id)
         end
       end
 
@@ -35,10 +35,10 @@ module Acl9
                        else            { :authorizable => object }
                        end.merge(      { :name => role_name.to_s })
 
-          role = self._auth_role_class.create(role_attrs)          
+          role = self._auth_role_class.create(role_attrs)
         end
 
-        self.roles << role if role && !self.roles.exists?( role.id )
+        self.acl9_roles << role if role && !self.acl9_roles.exists?(role.id)
       end
 
       ##
@@ -58,7 +58,7 @@ module Acl9
       # @return [Boolean] Returns true if +self+ has any roles on +object+.
       # @see Acl9::ModelExtensions::Object#accepts_roles_by?
       def has_roles_for?(object)
-        !!self.roles.detect(&role_selecting_lambda(object))
+        !!self.acl9_roles.detect(&role_selecting_lambda(object))
       end
 
       alias :has_role_for? :has_roles_for?
@@ -75,7 +75,7 @@ module Acl9
       #
       #   user.roles_for(product).map(&:name).sort  #=> role names in alphabetical order
       def roles_for(object)
-        self.roles.select(&role_selecting_lambda(object))
+        self.acl9_roles.select(&role_selecting_lambda(object))
       end
 
       ##
@@ -89,12 +89,12 @@ module Acl9
       ##
       # Unassign all roles from +self+.
       def has_no_roles!
-        # for some reason simple 
+        # for some reason simple
         #
         #   self.roles.each { |role| delete_role(role) }
         #
         # doesn't work. seems like a bug in ActiveRecord
-        self.roles.map(&:id).each do |role_id|
+        self.acl9_roles.map(&:id).each do |role_id|
           delete_role self._auth_role_class.find(role_id)
         end
       end
@@ -108,8 +108,8 @@ module Acl9
         when nil
           lambda { |role| role.authorizable.nil? }
         else
-          lambda do |role| 
-            role.authorizable_type == object.class.base_class.to_s && role.authorizable == object 
+          lambda do |role|
+            role.authorizable_type == object.class.base_class.to_s && role.authorizable == object
           end
         end
       end
@@ -123,18 +123,18 @@ module Acl9
                when nil
                  [ 'name = ? and authorizable_type IS NULL and authorizable_id IS NULL', role_name ]
                else
-                 [ 
+                 [
                    'name = ? and authorizable_type = ? and authorizable_id = ?',
-                   role_name, object.class.base_class.to_s, object.id 
+                   role_name, object.class.base_class.to_s, object.id
                  ]
                end
 
         self._auth_role_class.first :conditions => cond
       end
 
-      def delete_role(role) 
+      def delete_role(role)
         if role
-          self.roles.delete role
+          self.acl9_roles.delete role
 
           role.destroy if role.send(self.class.to_s.demodulize.tableize).empty?
         end
