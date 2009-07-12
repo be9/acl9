@@ -23,7 +23,7 @@ class RolesTest < Test::Unit::TestCase
   end
 
   it "#has_role! without object (global role)" do
-    lambda do 
+    lambda do
       @user.has_role!('admin')
     end.should change { Role.count }.from(0).to(1)
 
@@ -51,12 +51,12 @@ class RolesTest < Test::Unit::TestCase
     @user.has_role?('manager', @foo).should be_true
     @user.has_roles_for?(@foo).should be_true
     @user.has_role_for?(@foo).should be_true
-    
+
     roles = @user.roles_for(@foo)
     roles.should == @foo.accepted_roles_by(@user)
     roles.size.should == 1
     roles.first.name.should == "manager"
-    
+
     @user.has_role?('manager', @bar).should be_false
     @user2.has_role?('manager', @foo).should be_false
 
@@ -67,7 +67,7 @@ class RolesTest < Test::Unit::TestCase
 
   it "shoud count object role also as global role" do
     @user.has_role!('manager', @foo)
-    
+
     @user.has_role?('manager').should be_true
   end
 
@@ -82,11 +82,11 @@ class RolesTest < Test::Unit::TestCase
     @user.has_role?('user', Bar).should be_true
     @user.has_roles_for?(Bar).should be_true
     @user.has_role_for?(Bar).should be_true
-    
+
     roles = @user.roles_for(Bar)
     roles.size.should == 1
     roles.first.name.should == "user"
-    
+
     @user.has_role?('user', Foo).should be_false
     @user2.has_role?('user', Bar).should be_false
   end
@@ -100,7 +100,7 @@ class RolesTest < Test::Unit::TestCase
     @user.has_role!('manager', @foo)
     @user.has_role!('user',    @foo)
     @user.has_role!('admin',   @foo)
-    
+
     @user.has_role!('owner',   @bar)
 
     @user.roles_for(@foo)        .map(&:name).sort.should == %w(admin manager user)
@@ -111,7 +111,7 @@ class RolesTest < Test::Unit::TestCase
     @user.has_role!('owner', @bar)
     @user2.has_role!('owner', @bar)
 
-    @user.acl9_roles.should == @user2.acl9_roles
+    @user.role_objects.should == @user2.role_objects
   end
 
   it "#has_no_role! should unassign a global role from user" do
@@ -119,17 +119,17 @@ class RolesTest < Test::Unit::TestCase
 
     lambda do
       @user.has_no_role!('3133t')
-    end.should change { @user.acl9_roles.count }.by(-1)
+    end.should change { @user.role_objects.count }.by(-1)
 
     @user.has_role?('3133t').should be_false
   end
-  
+
   it "#has_no_role! should unassign an object role from user" do
     set_some_roles
 
     lambda do
       @user.has_no_role!('manager', @foo)
-    end.should change { @user.acl9_roles.count }.by(-1)
+    end.should change { @user.role_objects.count }.by(-1)
 
     @user.has_role?('manager', @foo).should be_false
     @user.has_role?('user', @foo).should be_true      # another role on the same object
@@ -140,7 +140,7 @@ class RolesTest < Test::Unit::TestCase
 
     lambda do
       @user.has_no_role!('admin', Foo)
-    end.should change { @user.acl9_roles.count }.by(-1)
+    end.should change { @user.role_objects.count }.by(-1)
 
     @user.has_role?('admin', Foo).should be_false
     @user.has_role?('admin').should be_true           # global role
@@ -151,7 +151,7 @@ class RolesTest < Test::Unit::TestCase
 
     lambda do
       @user.has_no_roles_for!
-    end.should change { @user.acl9_roles.count }.by(-4)
+    end.should change { @user.role_objects.count }.by(-4)
 
     @user.has_role?('admin').should be_false
     @user.has_role?('3133t').should be_false
@@ -164,18 +164,18 @@ class RolesTest < Test::Unit::TestCase
 
     lambda do
       @user.has_no_roles_for! @foo
-    end.should change { @user.acl9_roles.count }.by(-2)
+    end.should change { @user.role_objects.count }.by(-2)
 
     @user.has_role?('user', @foo).should be_false
     @user.has_role?('manager', @foo).should be_false
   end
-  
+
   it "#has_no_roles_for! should unassign both class roles and object roles for objects of that class" do
     set_some_roles
 
     lambda do
       @user.has_no_roles_for! Foo
-    end.should change { @user.acl9_roles.count }.by(-4)
+    end.should change { @user.role_objects.count }.by(-4)
 
     @user.has_role?('admin', Foo).should be_false
     @user.has_role?('manager', Foo).should be_false
@@ -187,7 +187,7 @@ class RolesTest < Test::Unit::TestCase
     set_some_roles
 
     @user.has_no_roles!
-    @user.acl9_roles.count.should == 0
+    @user.role_objects.count.should == 0
   end
 
   it "should delete unused roles from table" do
@@ -200,7 +200,7 @@ class RolesTest < Test::Unit::TestCase
     Role.count.should == 1
 
     @bar.accepts_no_role!('owner', @user)
-    
+
     Role.count.should == 0
   end
 
@@ -219,7 +219,7 @@ class RolesTest < Test::Unit::TestCase
     @user.has_role?(:admin, Foo).should be_true
     @user.has_role?(:manager, @foo).should be_true
   end
-  
+
   private
 
   def set_some_roles
@@ -245,7 +245,7 @@ class RolesWithCustomClassNamesTest < Test::Unit::TestCase
   end
 
   it "should basically work" do
-    lambda do 
+    lambda do
       @subj.has_role!('admin')
       @subj.has_role!('user', @foobar)
     end.should change { AnotherRole.count }.from(0).to(2)
@@ -269,11 +269,11 @@ class UsersRolesAndSubjectsWithNamespacedClassNamesTest < Test::Unit::TestCase
     @user = Other::User.create!
     @user2 = Other::User.create!
     @foobar = Other::FooBar.create!
-    
+
   end
 
   it "should basically work" do
-    lambda do 
+    lambda do
       @user.has_role!('admin')
       @user.has_role!('user', @foobar)
     end.should change { Other::Role.count }.from(0).to(2)
