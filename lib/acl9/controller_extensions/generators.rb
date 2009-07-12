@@ -111,6 +111,8 @@ module Acl9
         end
       end
 
+      ################################################################
+
       class FilterMethod < BaseGenerator
         def initialize(subject_method, method_name)
           super
@@ -145,6 +147,8 @@ module Acl9
         end
       end
 
+      ################################################################
+
       class BooleanMethod < FilterMethod
         def install_on(controller_class, opts)
           debug_dump(controller_class) if opts[:debug]
@@ -160,8 +164,16 @@ module Acl9
 
         def to_method_code
           <<-RUBY
-            def #{@method_name}(options = {})
-              #{allowance_expression}
+            def #{@method_name}(*args)
+              options = args.extract_options!
+
+              unless args.size <= 1
+                raise ArgumentError, "call #{@method_name} with 0, 1 or 2 arguments"
+              end
+
+              action_name = args.empty? ? self.action_name : args.first.to_s
+
+              return #{allowance_expression}
             end
           RUBY
         end
@@ -170,6 +182,8 @@ module Acl9
           "(options[:#{object}] || #{super})"
         end
       end
+
+      ################################################################
 
       class HelperMethod < BooleanMethod
         def initialize(subject_method, method)

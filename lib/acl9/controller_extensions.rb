@@ -46,10 +46,12 @@ module Acl9
 
         method = opts[:as_method]
 
+        query_method_available = true
         generator = case
                     when method && filter
                       Acl9::Dsl::Generators::FilterMethod.new(subject_method, method)
                     when method && !filter
+                      query_method_available = false
                       Acl9::Dsl::Generators::BooleanMethod.new(subject_method, method)
                     else
                       Acl9::Dsl::Generators::FilterLambda.new(subject_method)
@@ -58,6 +60,25 @@ module Acl9
         generator.acl_block!(&block)
 
         generator.install_on(self, opts)
+
+        if query_method_available && (query_method = opts.delete(:query_method))
+          case query_method
+          when true
+            if method
+              query_method = "#{method}?"
+            else
+              raise ArgumentError, "You must specify :query_method as Symbol"
+            end
+          when Symbol, String
+            # okay here
+          else
+            raise ArgumentError, "Invalid value for :query_method"
+          end
+
+          second_generator = Acl9::Dsl::Generators::BooleanMethod.new(subject_method, query_method)
+          second_generator.acl_block!(&block)
+          second_generator.install_on(self, opts)
+        end
       end
     end
   end

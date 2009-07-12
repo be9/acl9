@@ -55,7 +55,7 @@ class ACLArguments < EmptyController
   access_control :except => [:index, :show] do
     allow :admin, :if => :true_meth, :unless => :false_meth
   end
-  
+
   include TrueFalse
 end
 
@@ -129,11 +129,32 @@ class ACLObjectsHash < ApplicationController
     @foo = nil
     render :text => (allowed?(:foo => MyDearFoo.instance) ? 'OK' : 'AccessDenied')
   end
-  
+
   def current_user
     params[:user]
   end
 end
+
+class ACLActionOverride < ApplicationController
+  access_control :allowed?, :filter => false do
+    allow all, :to => :index
+    deny all, :to => :show
+    allow :owner, :of => :foo, :to => :edit
+  end
+
+  def check_allow
+    render :text => (allowed?(params[:_action]) ? 'OK' : 'AccessDenied')
+  end
+
+  def check_allow_with_foo
+    render :text => (allowed?(params[:_action], :foo => MyDearFoo.instance) ? 'OK' : 'AccessDenied')
+  end
+
+  def current_user
+    params[:user]
+  end
+end
+
 
 class ACLHelperMethod < ApplicationController
   access_control :helper => :foo? do
@@ -145,9 +166,42 @@ class ACLHelperMethod < ApplicationController
 
     render :inline => "<%= foo? ? 'OK' : 'AccessDenied' %>"
   end
-  
+
   def current_user
     params[:user]
   end
 end
 
+class ACLQueryMethod < ApplicationController
+  attr_accessor :current_user
+
+  access_control :acl, :query_method => true do
+    allow :editor, :to => [:edit, :update, :destroy]
+    allow :viewer, :to => [:index, :show]
+    allow :owner,  :of => :foo, :to => :fooize
+  end
+end
+
+class ACLQueryMethodWithLambda < ApplicationController
+  attr_accessor :current_user
+
+  access_control :query_method => :acl? do
+    allow :editor, :to => [:edit, :update, :destroy]
+    allow :viewer, :to => [:index, :show]
+    allow :owner,  :of => :foo, :to => :fooize
+  end
+end
+
+class ACLNamedQueryMethod < ApplicationController
+  attr_accessor :current_user
+
+  access_control :acl, :query_method => 'allow_ay' do
+    allow :editor, :to => [:edit, :update, :destroy]
+    allow :viewer, :to => [:index, :show]
+    allow :owner,  :of => :foo, :to => :fooize
+  end
+
+  def acl?(*args)
+    allow_ay(*args)
+  end
+end
