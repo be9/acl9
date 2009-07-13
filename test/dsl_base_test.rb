@@ -31,19 +31,19 @@ class DslTester < Acl9::Dsl::Base
     @_objects = {}
     @_current_action = nil
   end
-  
+
   def permit(user, *args)
     check_allowance(user, *args).should == true
 
     self
   end
-  
+
   def forbid(user, *args)
     check_allowance(user, *args).should == false
 
     self
   end
-  
+
   def show_code
     puts "\n", allowance_expression
     self
@@ -91,7 +91,7 @@ class DslBaseTest < Test::Unit::TestCase
   def acl(&block)
     tester = DslTester.new
     tester.acl_block!(&block)
-    
+
     tester
   end
 
@@ -99,7 +99,7 @@ class DslBaseTest < Test::Unit::TestCase
     actions.each                  { |act| tester.permit(user, act, vars) }
     (@all_actions - actions).each { |act| tester.forbid(user, act, vars) }
   end
-  
+
   before do
     @user = FakeUser.new
     @user2 = FakeUser.new
@@ -111,29 +111,29 @@ class DslBaseTest < Test::Unit::TestCase
 
   describe "default" do
     it "should set default action to deny if none specified" do
-      acl do end.default_action.should == :deny 
+      acl do end.default_action.should == :deny
     end
-    
+
     it "should set default action to allow" do
-      acl do 
+      acl do
         default :allow
       end.default_action.should == :allow
     end
-    
+
     it "should set default action to deny" do
-      acl do 
+      acl do
         default :deny
       end.default_action.should == :deny
     end
-    
+
     it "should raise ArgumentError with unknown default_action" do
-      arg_err do 
+      arg_err do
         default 123
       end
     end
-    
+
     it "should raise ArgumentError when default is called more than once" do
-      arg_err do 
+      arg_err do
         default :deny
         default :deny
       end
@@ -145,7 +145,7 @@ class DslBaseTest < Test::Unit::TestCase
       acl do
       end.forbid(nil).forbid(@user)
     end
-    
+
     it "should allow everyone with default allow" do
       acl do
         default :allow
@@ -157,7 +157,7 @@ class DslBaseTest < Test::Unit::TestCase
     it "allow should raise an ArgumentError" do
       arg_err { allow }
     end
-    
+
     it "deny should raise an ArgumentError" do
       arg_err { deny }
     end
@@ -169,20 +169,20 @@ class DslBaseTest < Test::Unit::TestCase
         allow nil
       end.permit(nil).forbid(@user)
     end
-    
+
     it "'allow anonymous' should allow anonymous, but not logged in" do
       acl do
         allow anonymous
       end.permit(nil).forbid(@user)
     end
-    
+
     it "'deny nil' should deny anonymous, but not logged in" do
       acl do
         default :allow
         deny nil
       end.forbid(nil).permit(@user)
     end
-    
+
     it "'deny anonymous' should deny anonymous, but not logged in" do
       acl do
         default :allow
@@ -192,17 +192,19 @@ class DslBaseTest < Test::Unit::TestCase
   end
 
   describe "all" do
-    it "'allow all' should allow all" do
-      acl do
-        allow all
-      end.permit(nil).permit(@user)
-    end
-    
-    it "'deny all' should deny all" do
-      acl do
-        default :allow
-        deny all
-      end.forbid(nil).forbid(@user)
+    [:all, :everyone, :everybody, :anyone].each do |pseudorole|
+      it "'allow #{pseudorole}' should allow all" do
+        acl do
+          allow send(pseudorole)
+        end.permit(nil).permit(@user)
+      end
+
+      it "'deny #{pseudorole}' should deny all" do
+        acl do
+          default :allow
+          deny send(pseudorole)
+        end.forbid(nil).forbid(@user)
+      end
     end
   end
 
@@ -214,7 +216,7 @@ class DslBaseTest < Test::Unit::TestCase
         deny :bzz
       end.permit(nil).permit(@user)
     end
-    
+
     it "should deny when deny is matched, but allow is not" do
       acl do
         default :allow
@@ -222,7 +224,7 @@ class DslBaseTest < Test::Unit::TestCase
         allow :blah
       end.forbid(nil).forbid(@user)
     end
-    
+
     it "should allow when allow is matched, but deny is not" do
       @user << :cool
       acl do
@@ -231,7 +233,7 @@ class DslBaseTest < Test::Unit::TestCase
         allow :cool
       end.permit(@user)
     end
-    
+
     it "should allow both allow and deny conditions are matched" do
       @user << :cool
       acl do
@@ -239,7 +241,7 @@ class DslBaseTest < Test::Unit::TestCase
         deny :cool
         allow :cool
       end.permit(@user)
-      
+
       acl do
         default :allow
         deny all
@@ -247,14 +249,14 @@ class DslBaseTest < Test::Unit::TestCase
       end.permit(@user).permit(nil).permit(@user2)
     end
   end
- 
+
   describe "logged_in" do
     it "'allow logged_in' should allow logged in, but not anonymous" do
       acl do
         allow logged_in
       end.forbid(nil).permit(@user)
     end
-    
+
     it "'allow logged_in' should deny logged in, but not anonymous" do
       acl do
         default :allow
@@ -271,7 +273,7 @@ class DslBaseTest < Test::Unit::TestCase
         deny :bzz
       end.forbid(nil).forbid(@user)
     end
-    
+
     it "should deny when deny is matched, but allow is not" do
       acl do
         default :deny
@@ -279,7 +281,7 @@ class DslBaseTest < Test::Unit::TestCase
         allow :blah
       end.forbid(nil).forbid(@user)
     end
-    
+
     it "should allow when allow is matched, but deny is not" do
       @user << :cool
       acl do
@@ -288,7 +290,7 @@ class DslBaseTest < Test::Unit::TestCase
         allow :cool
       end.permit(@user)
     end
-    
+
     it "should deny both allow and deny conditions are matched" do
       @user << :cool
       acl do
@@ -296,7 +298,7 @@ class DslBaseTest < Test::Unit::TestCase
         deny :cool
         allow :cool
       end.forbid(@user)
-      
+
       acl do
         default :deny
         deny all
@@ -311,7 +313,7 @@ class DslBaseTest < Test::Unit::TestCase
 
       acl { allow :admin }.permit(@user).forbid(nil).forbid(@user2)
     end
-    
+
     it "#allow with plural role name" do
       @user << :mouse
 
@@ -333,13 +335,13 @@ class DslBaseTest < Test::Unit::TestCase
         allow :cool
       end.permit(@user).permit(@user2).forbid(nil).forbid(@user3)
     end
-    
+
     it "#deny with role" do
       @user << :foo
 
       acl { default :allow; deny :foo }.forbid(@user).permit(nil).permit(@user2)
     end
-    
+
     it "#deny with plural role name" do
       @user << :mouse
 
@@ -394,7 +396,7 @@ class DslBaseTest < Test::Unit::TestCase
         allow :owner, :of => ThatFoo
       end.permit(@user).forbid(nil).forbid(@user2)
     end
-    
+
     [:of, :for, :in, :on, :at, :by].each do |prep|
       it "#deny with object role (:#{prep}) should check controller's ivar" do
         @user << [:bastard, @foo]
@@ -409,7 +411,7 @@ class DslBaseTest < Test::Unit::TestCase
         permit(nil, :foo => @foo).
         permit(@user2, :foo => @foo)
       end
-      
+
       it "#deny with invalid value for preposition :#{prep} should raise an ArgumentError" do
         arg_err do
           deny :her, :for => "him"
@@ -450,7 +452,7 @@ class DslBaseTest < Test::Unit::TestCase
       after do
         %w(index show).each                 { |act| @list.permit(nil, act) }
         %w(edit update delete destroy).each { |act| @list.forbid(nil, act) }
-        
+
         %w(index show edit update).each { |act| @list.permit(@user, act) }
         %w(delete destroy).each         { |act| @list.forbid(@user, act) }
 
@@ -469,7 +471,7 @@ class DslBaseTest < Test::Unit::TestCase
           allow 'trusted', :to => %w(edit update delete destroy)
         end
       end
-      
+
       it ":except should limit rule scope to all actions except specified" do
         @user << :manager
         @user2 << :trusted
@@ -500,7 +502,7 @@ class DslBaseTest < Test::Unit::TestCase
       permit(nil, :call => OpenStruct.new(:meth => true)).
       forbid(nil, :call => OpenStruct.new(:meth => false))
     end
-    
+
     it "allow ... :unless" do
       acl do
         allow nil, :unless => :meth
@@ -508,7 +510,7 @@ class DslBaseTest < Test::Unit::TestCase
       permit(nil, :call => OpenStruct.new(:meth => false)).
       forbid(nil, :call => OpenStruct.new(:meth => true))
     end
-    
+
     it "deny ... :if" do
       acl do
         default :allow
@@ -538,7 +540,7 @@ class DslBaseTest < Test::Unit::TestCase
         allow :bzz, :whoa
       end.permit(@user).permit(@user2).forbid(nil).forbid(@user3)
     end
-    
+
     it "#allow should be able to receive a role list (object roles)" do
       @user << [:maker, @foo]
       @user2 << [:faker, @foo2]
@@ -554,7 +556,7 @@ class DslBaseTest < Test::Unit::TestCase
       forbid(@user3, :foo => @foo2).
       forbid(nil)
     end
-    
+
     it "#allow should be able to receive a role list (class roles)" do
       @user  << [:frooble, ThatFoo]
       @user2 << [:oombigle, ThatFoo]
@@ -568,7 +570,7 @@ class DslBaseTest < Test::Unit::TestCase
       forbid(@user3).
       forbid(nil)
     end
-    
+
     it "#deny should be able to receive a role list (global roles)" do
       @user << :bzz
       @user2 << :whoa
@@ -578,7 +580,7 @@ class DslBaseTest < Test::Unit::TestCase
         deny :bzz, :whoa
       end.forbid(@user).forbid(@user2).permit(nil).permit(@user3)
     end
-    
+
     it "#deny should be able to receive a role list (object roles)" do
       @user << [:maker, @foo]
       @user2 << [:faker, @foo2]
@@ -596,7 +598,7 @@ class DslBaseTest < Test::Unit::TestCase
       permit(@user3, :foo => @foo2).
       permit(nil)
     end
-    
+
     it "#deny should be able to receive a role list (class roles)" do
       @user  << [:frooble, ThatFoo]
       @user2 << [:oombigle, ThatFoo]
@@ -645,25 +647,25 @@ class DslBaseTest < Test::Unit::TestCase
         actions :foo, :bar
       end
     end
-    
+
     it "should raise an ArgumentError when actions has no arguments" do
       arg_err do
         actions do end
       end
     end
-    
+
     it "should raise an ArgumentError when actions is called inside actions block" do
       arg_err do
-        actions :foo, :bar do 
+        actions :foo, :bar do
           actions :foo, :bar do
           end
         end
       end
     end
-    
+
     it "should raise an ArgumentError when default is called inside actions block" do
       arg_err do
-        actions :foo, :bar do 
+        actions :foo, :bar do
           default :allow
         end
       end
@@ -672,15 +674,15 @@ class DslBaseTest < Test::Unit::TestCase
     [:to, :except].each do |opt|
       it "should raise an ArgumentError when allow is called with #{opt} option" do
         arg_err do
-          actions :foo do 
+          actions :foo do
             allow all, opt => :bar
           end
         end
       end
-      
+
       it "should raise an ArgumentError when deny is called with #{opt} option" do
         arg_err do
-          actions :foo do 
+          actions :foo do
             deny all, opt => :bar
           end
         end
