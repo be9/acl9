@@ -37,8 +37,9 @@ module Acl9
 
         has_and_belongs_to_many :role_objects, :class_name => role, :join_table => join_table
 
-        cattr_accessor :_auth_role_class_name
+        cattr_accessor :_auth_role_class_name, :_auth_subject_class_name
         self._auth_role_class_name = role
+        self._auth_subject_class_name = self.to_s
 
         include Acl9::ModelExtensions::Subject
       end
