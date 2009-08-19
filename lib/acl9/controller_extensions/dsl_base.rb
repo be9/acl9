@@ -112,9 +112,9 @@ module Acl9
 
         role_checks = args.map do |who|
           case who
-          when nil   then "#{_subject_ref}.nil?"    # anonymous
-          when false then "!#{_subject_ref}.nil?"   # logged_in
-          when true  then "true"                # all
+          when anonymous() then "#{_subject_ref}.nil?"
+          when logged_in() then "!#{_subject_ref}.nil?"
+          when all()       then "true"
           else
             "!#{_subject_ref}.nil? && #{_subject_ref}.has_role?('#{who.to_s.singularize}', #{object})"
           end

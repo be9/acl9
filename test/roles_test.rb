@@ -76,7 +76,7 @@ class RolesTest < Test::Unit::TestCase
     @user.has_role?('manager', Foo).should be_false
   end
 
-  context "protect_global_roles=true" do
+  context "protect_global_roles is true" do
     before do
       @saved_option = Acl9.config[:protect_global_roles]
       Acl9.config[:protect_global_roles] = true
