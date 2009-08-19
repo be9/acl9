@@ -4,13 +4,38 @@ module Acl9
       ##
       # Role check.
       #
-      # @return [Boolean] Returns true if +self+ has a role +role_name+ on +object+.
+      # There is a global option, +Acl9.config[:protect_global_roles]+, which governs
+      # this method behavior.
       #
+      # If protect_global_roles is +false+, an object role is automatically counted
+      # as global role. E.g.
+      #
+      #   Acl9.config[:protect_global_roles] = false
+      #   user.has_role!(:manager, @foo)
+      #   user.has_role?(:manager, @foo)  # => true
+      #   user.has_role?(:manager)        # => true
+      #
+      # In this case manager is anyone who "manages" at least one object.
+      #
+      # However, if protect_global_roles option set to +true+, you'll need to 
+      # explicitly grant global role with same name.
+      #
+      #   Acl9.config[:protect_global_roles] = true
+      #   user.has_role!(:manager, @foo)
+      #   user.has_role?(:manager)        # => false
+      #   user.has_role!(:manager)
+      #   user.has_role?(:manager)        # => true
+      #
+      # protect_global_roles option is +false+ by default as for now, but this 
+      # may change in future!
+      #
+      # @return [Boolean] Whether +self+ has a role +role_name+ on +object+.
       # @param [Symbol,String] role_name Role name
       # @param [Object] object Object to query a role on
+      #
       # @see Acl9::ModelExtensions::Object#accepts_role?
       def has_role?(role_name, object = nil)
-        !! if object.nil?
+        !! if object.nil? && !::Acl9.config[:protect_global_roles]
           self.role_objects.find_by_name(role_name.to_s) ||
           self.role_objects.member?(get_role(role_name, nil))
         else
