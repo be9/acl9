@@ -1,3 +1,7 @@
+h2. 0.11.0 (16-Sep-2009)
+
+* :protect_global_roles
+* Subject#roles renamed to Subject#role_objects
 * Fix namespaced models in roles backend (thanks goes to Tomas Jogin)
 * Action name override in boolean methods.
 * @:query_method@ option for @access_control@.
