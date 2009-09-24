@@ -31,14 +31,18 @@ module Acl9
       # @see Acl9::ModelExtensions::Subject
       #
       def acts_as_authorization_subject(options = {})
+      	assoc = options[:association_name] || Acl9::config[:default_association_name]
         role = options[:role_class_name] || Acl9::config[:default_role_class_name]
         join_table = options[:join_table_name] || Acl9::config[:default_join_table_name] ||
                     join_table_name(undecorated_table_name(self.to_s), undecorated_table_name(role))
 
-        has_and_belongs_to_many :role_objects, :class_name => role, :join_table => join_table
+        has_and_belongs_to_many assoc, :class_name => role, :join_table => join_table
 
         cattr_accessor :_auth_role_class_name
         self._auth_role_class_name = role
+        
+        cattr_accessor :_auth_role_assoc_name
+        self._auth_role_assoc_name = assoc
 
         include Acl9::ModelExtensions::Subject
       end

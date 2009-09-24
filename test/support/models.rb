@@ -26,6 +26,13 @@ class FooBar < ActiveRecord::Base
   acts_as_authorization_object :role_class_name => 'AnotherRole', :subject_class_name => "AnotherSubject"
 end
 
+class DifferentAssociationNameSubject < ActiveRecord::Base
+	acts_as_authorization_subject :association_name => 'roles', :role_class_name => "DifferentAssociationNameRole"
+end
+
+class DifferentAssociationNameRole < ActiveRecord::Base
+	acts_as_authorization_role :subject_class_name => "DifferentAssociationNameSubject"
+end
 
 module Other
 

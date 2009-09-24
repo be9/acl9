@@ -278,6 +278,33 @@ class RolesWithCustomClassNamesTest < Test::Unit::TestCase
   end
 end
 
+class RolesWithCustomAssociationNamesTest < Test::Unit::TestCase
+	before do
+		DifferentAssociationNameRole.destroy_all
+		[DifferentAssociationNameSubject, FooBar].each { |model| model.delete_all }
+		
+		@subj = DifferentAssociationNameSubject.create!
+		@subj2 = DifferentAssociationNameSubject.create!
+		@foobar = FooBar.create!
+	end
+	
+	it "should basically work" do
+    lambda do
+      @subj.has_role!('admin')
+      @subj.has_role!('user', @foobar)
+    end.should change { DifferentAssociationNameRole.count }.from(0).to(2)
+
+    @subj.has_role?('admin').should be_true
+    @subj2.has_role?('admin').should be_false
+
+    @subj.has_role?(:user, @foobar).should be_true
+    @subj2.has_role?(:user, @foobar).should be_false
+
+    @subj.has_no_roles!
+    @subj2.has_no_roles!
+  end
+end
+
 class UsersRolesAndSubjectsWithNamespacedClassNamesTest < Test::Unit::TestCase
   before do
     Other::Role.destroy_all
