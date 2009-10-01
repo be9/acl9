@@ -17,7 +17,7 @@ class Test::Unit::TestCase
   custom_matcher :be_false do |receiver, matcher, args|
     !receiver
   end
-  
+
   custom_matcher :be_true do |receiver, matcher, args|
     !!receiver
   end
