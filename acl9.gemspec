@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["oleg dashevskii"]
-  s.date = %q{2009-09-16}
+  s.date = %q{2009-10-10}
   s.description = %q{Role-based authorization system for Rails with a nice DSL for access control lists}
   s.email = %q{olegdashevskii@gmail.com}
   s.extra_rdoc_files = [
@@ -46,13 +46,13 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Yet another role-based authorization system for Rails}
   s.test_files = [
-    "test/dsl_base_test.rb",
-     "test/test_helper.rb",
-     "test/access_control_test.rb",
+    "test/helpers_test.rb",
      "test/support/schema.rb",
      "test/support/models.rb",
      "test/support/controllers.rb",
-     "test/helpers_test.rb",
+     "test/dsl_base_test.rb",
+     "test/access_control_test.rb",
+     "test/test_helper.rb",
      "test/roles_test.rb"
   ]
 

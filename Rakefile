@@ -18,8 +18,9 @@ begin
     s.add_development_dependency "jeremymcanally-context", ">= 0.5.5"
     s.add_development_dependency "jnunemaker-matchy", ">= 0.4.0"
   end
+  Jeweler::GemcutterTasks.new
 rescue LoadError
-  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+  puts "Jeweler not available. Install it with: sudo gem install jeweler"
 end
 
 Rake::TestTask.new(:test) do |test|
