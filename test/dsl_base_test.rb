@@ -753,6 +753,43 @@ class DslBaseTest < Test::Unit::TestCase
       permit_some(list, @user2, %w(show index delete destroy))
       permit_some(list, @user3, %w(show index delete destroy), :object => @foo)
     end
+    
+    it "should work with anonymous" do
+      @user << :superadmin
+      
+      list = acl do
+        allow :superadmin
+        
+        action :index, :show do
+          allow anonymous
+        end
+      end
+
+      @all_actions = %w(show index edit update delete destroy)
+
+      permit_some(list, @user, @all_actions)
+      permit_some(list, nil, %w(index show))
+    end
+    
+    it "should work with anonymous and other role inside" do
+      @user << :superadmin
+      @user2 << :member
+      
+      list = acl do
+        allow :superadmin
+        
+        action :index, :show do
+          allow anonymous
+          allow :member
+        end
+      end
+
+      @all_actions = %w(show index edit update delete destroy)
+
+      permit_some(list, @user, @all_actions)
+      permit_some(list, @user2, %w(index show))
+      permit_some(list, nil, %w(index show))
+    end
   end
 end
 
