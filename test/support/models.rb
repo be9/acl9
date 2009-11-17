@@ -10,6 +10,11 @@ class Foo < ActiveRecord::Base
   acts_as_authorization_object
 end
 
+class Uuid < ActiveRecord::Base
+  set_primary_key "uuid"  
+  acts_as_authorization_object
+end
+
 class Bar < ActiveRecord::Base
   acts_as_authorization_object
 end

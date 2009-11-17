@@ -14,6 +14,10 @@ class RolesTest < Test::Unit::TestCase
     @user2 = User.create!
     @foo = Foo.create!
     @bar = Bar.create!
+    #create authorized object that has a string primary key
+    @uuid = Uuid.new
+    @uuid.uuid = "C41642EE-2780-0001-189F-17F3101B26E0"
+    @uuid.save
   end
 
   it "should not have any roles by default" do
@@ -221,6 +225,20 @@ class RolesTest < Test::Unit::TestCase
     Role.count.should == 0
   end
 
+  it "should be able to get users that have a role on a authorized object" do
+    @user.has_role!('owner', @bar)
+    @user2.has_role!('owner', @bar)
+    
+    @bar.users.count.should == 2
+  end
+  
+  it "should be able to get users that have a role on a authorized object with text primary key" do
+    @user.has_role!('owner', @uuid)
+    @user2.has_role!('owner', @uuid)
+
+    @uuid.users.count.should == 2
+  end
+  
   it "should accept :symbols as role names" do
     @user.has_role! :admin
     @user.has_role! :_3133t
