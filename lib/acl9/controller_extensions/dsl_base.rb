@@ -142,7 +142,8 @@ module Acl9
       end
 
       def _either_of(exprs)
-        exprs.map { |expr| "(#{expr})" }.join(' || ')
+        clause = exprs.map { |expr| "(#{expr})" }.join(' || ')
+        return "(#{clause})"
       end
 
       def _add_rule(what, condition)

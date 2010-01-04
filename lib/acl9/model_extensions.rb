@@ -16,6 +16,8 @@ module Acl9
       #                           Class name of the role class (e.g. 'AccountRole')
       # @option options [String] :join_table_name (Acl9::config[:default_join_table_name])
       #                           Join table name (e.g. 'accounts_account_roles')
+      # @option options [String] :association_name (Acl9::config[:default_association_name])
+      #														Association name (e.g. ':roles')
       # @example
       #   class User < ActiveRecord::Base
       #     acts_as_authorization_subject
@@ -81,7 +83,7 @@ module Acl9
 
         sql_where = <<-'EOS'
           WHERE authorizable_type = '#{self.class.base_class.to_s}'
-          AND authorizable_id = #{id}
+          AND authorizable_id = #{column_for_attribute(self.class.primary_key).text? ? "'#{id}'": id}
         EOS
 
         has_many :accepted_roles, :as => :authorizable, :class_name => role, :dependent => :destroy

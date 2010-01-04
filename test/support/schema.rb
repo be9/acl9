@@ -2,7 +2,7 @@ ActiveRecord::Schema.define(:version => 0) do
   create_table "roles", :force => true do |t|
     t.string   "name",              :limit => 40
     t.string   "authorizable_type", :limit => 40
-    t.integer  "authorizable_id"
+    t.string  "authorizable_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -36,6 +36,12 @@ ActiveRecord::Schema.define(:version => 0) do
     t.datetime "updated_at"
   end
 
+  create_table "uuids", :id => false, :force => true do |t|
+    t.string "uuid"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+  
   create_table "bars", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
