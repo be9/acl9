@@ -1,6 +1,6 @@
 module Acl9
   module ModelExtensions
-    module Subject
+    module ForSubject
       ##
       # Role check.
       #

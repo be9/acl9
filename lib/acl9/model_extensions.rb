@@ -1,5 +1,5 @@
-require File.join(File.dirname(__FILE__), 'model_extensions', 'subject')
-require File.join(File.dirname(__FILE__), 'model_extensions', 'object')
+require File.join(File.dirname(__FILE__), 'model_extensions', 'for_subject')
+require File.join(File.dirname(__FILE__), 'model_extensions', 'for_object')
 
 module Acl9
   module ModelExtensions  #:nodoc:
@@ -41,7 +41,7 @@ module Acl9
         self._auth_role_class_name = role
         self._auth_subject_class_name = self.to_s
 
-        include Acl9::ModelExtensions::Subject
+        include Acl9::ModelExtensions::ForSubject
       end
 
       # Add role query and set methods to the class (making it an auth object class).
@@ -91,7 +91,7 @@ module Acl9
           :counter_sql => ("SELECT COUNT(DISTINCT #{subj_table}.id)" + sql_tables + sql_where),
           :readonly => true
 
-        include Acl9::ModelExtensions::Object
+        include Acl9::ModelExtensions::ForObject
       end
 
       # Make a class an auth role class.
