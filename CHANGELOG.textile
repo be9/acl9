@@ -1,3 +1,17 @@
+h2. 0.12.0 (04-Jan-2010)
+
+An anniversary release of fixes and hacks, introduced by venerable users of the plugin.
+
+* Allow for inheritance of subject (Jeff Jaco)
+* Renamed "Object" module in extensions, since it caused some breakage inside activesupport
+  (invisiblelama).
+* @show_to@ helper for usage in views (Antono Vasiljev)
+* @:association_name@ config option, now you can change Subject#role_objects to whatever
+  you want (Jeff Tucker).
+* Fix bug when Subject#id is a string, e.g. UUID (Julien Bachmann)
+* Bug with action blocks when using anonymous and another role (Franck)
+
+
 h2. 0.11.0 (16-Sep-2009)
 
 * :protect_global_roles

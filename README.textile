@@ -900,4 +900,4 @@ or even
 </code></pre>
 
 
-Copyright (c) 2009 Oleg Dashevskii, released under the MIT license.
+Copyright (c) 2009, 2010 Oleg Dashevskii, released under the MIT license.
