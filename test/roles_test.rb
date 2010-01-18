@@ -5,6 +5,21 @@ require 'support/models'
 #Logger = ActiveRecord::Base.logger
 load 'support/schema.rb'
 
+
+class SystemRolesTest < Test::Unit::TestCase
+  it "should not delete a system role" do
+    Role.destroy_all
+    @role=Role.create(:name=>"admin", :system=>true)
+    @role.system.should be_true
+    Role.count.should==1
+    @user = User.create!
+    @user.has_role!(:admin)
+    Role.count.should==1
+    @user.has_no_role!(:admin)
+    Role.count.should==1
+  end
+end
+
 class RolesTest < Test::Unit::TestCase
   before do
     Role.destroy_all
@@ -269,6 +284,7 @@ class RolesTest < Test::Unit::TestCase
   end
 end
 
+
 class RolesWithCustomClassNamesTest < Test::Unit::TestCase
   before do
     AnotherRole.destroy_all
@@ -352,4 +368,3 @@ class UsersRolesAndSubjectsWithNamespacedClassNamesTest < Test::Unit::TestCase
     @user2.has_no_roles!
   end
 end
-

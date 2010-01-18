@@ -1,6 +1,7 @@
 ActiveRecord::Schema.define(:version => 0) do
   create_table "roles", :force => true do |t|
     t.string   "name",              :limit => 40
+    t.boolean "system", :default=>false
     t.string   "authorizable_type", :limit => 40
     t.string  "authorizable_id"
     t.datetime "created_at"
