@@ -158,7 +158,6 @@ module Acl9
       end
 
       def delete_role(role)
-        puts "ROLE IS #{role.inspect}"
         if role
           self.role_objects.delete role
           if role.send(self._auth_subject_class_name.demodulize.tableize).empty?
