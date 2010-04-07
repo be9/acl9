@@ -158,7 +158,7 @@ h2. Subject model
 
 <pre><code>
   class User < ActiveRecord::Base
-    acts_as_authorization_subject
+    acts_as_authorization_subject  :association_name => :roles
   end
 </code></pre>
 
