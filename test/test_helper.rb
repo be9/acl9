@@ -11,7 +11,7 @@ require 'active_record'
 require 'action_controller'
 require 'action_controller/test_process'
 
-ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :dbfile => 'test.sqlite3')
+ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => 'test.sqlite3')
 
 class Test::Unit::TestCase
   custom_matcher :be_false do |receiver, matcher, args|

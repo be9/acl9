@@ -79,10 +79,12 @@ module Acl9
         role       = options[:role_class_name] || Acl9::config[:default_role_class_name]
         role_table = role.constantize.table_name
 
+        join_table = ActiveRecord::Base.send(:join_table_name, role_table, subj_table)
+
         sql_tables = <<-EOS
           FROM #{subj_table}
-          INNER JOIN #{role_table}_#{subj_table} ON #{subj_col}_id = #{subj_table}.id
-          INNER JOIN #{role_table}               ON #{role_table}.id = #{role.underscore}_id
+          INNER JOIN #{join_table} ON #{subj_col}_id = #{subj_table}.id
+          INNER JOIN #{role_table} ON #{role_table}.id = #{role.underscore}_id
         EOS
 
         sql_where = <<-'EOS'
