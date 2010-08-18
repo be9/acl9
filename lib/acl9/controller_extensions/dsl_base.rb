@@ -86,7 +86,7 @@ module Acl9
         action_check = _action_check_expression(args)
 
         squash = lambda do |rules|
-          _either_of(rules) + ' && ' + action_check
+          action_check + ' && ' + _either_of(rules)
         end
 
         @allows << squash.call(subsidiary.allows) if subsidiary.allows.size > 0
