@@ -19,9 +19,9 @@ module Acl9
 
     # Usage:
     #
-    #     <% show_to(:owner, :supervisor, :of => :account) do -%>
+    #     <%=show_to(:owner, :supervisor, :of => :account) do %>
     #       <%= 'hello' %>
-    #     <%- end -%>
+    #     <% end %>
     #
     def show_to(*args, &block)
       user = eval(Acl9.config[:default_subject_method].to_s)
@@ -36,7 +36,7 @@ module Acl9
         has_any = args.detect { |role| user.has_role?(role) }
       end
 
-      has_any ? yield(:block) : ''
+      has_any ? capture(&block) : ''
     end
   end
 end
