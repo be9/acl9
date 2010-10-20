@@ -11,8 +11,9 @@ module Acl9
       # @see Acl9::ModelExtensions::Subject#has_role?
       def accepts_role?(role_name, subject)
         if not subject.nil?
-          subject.has_role? role_name, self
+          return subject.has_role? role_name, self
         end
+        false
       end
 
       ##
@@ -23,8 +24,9 @@ module Acl9
       # @see Acl9::ModelExtensions::Subject#has_role!
       def accepts_role!(role_name, subject)
         if not subject.nil?
-          subject.has_role! role_name, self
+          return subject.has_role! role_name, self
         end
+        false
       end
 
       ##
@@ -35,8 +37,9 @@ module Acl9
       # @see Acl9::ModelExtensions::Subject#has_no_role!
       def accepts_no_role!(role_name, subject)
         if not subject.nil?
-          subject.has_no_role! role_name, self
+          return subject.has_no_role! role_name, self
         end
+        false
       end
 
       ##
@@ -47,8 +50,9 @@ module Acl9
       # @see Acl9::ModelExtensions::Subject#has_roles_for?
       def accepts_roles_by?(subject)
         if not subject.nil?
-          subject.has_roles_for? self
+          return subject.has_roles_for? self
         end
+        false
       end
 
       alias :accepts_role_by? :accepts_roles_by?
@@ -61,8 +65,9 @@ module Acl9
       # @see Acl9::ModelExtensions::Subject#roles_for
       def accepted_roles_by(subject)
         if not subject.nil?
-          subject.roles_for self
+          return subject.roles_for self
         end
+        false
       end
     end
   end
