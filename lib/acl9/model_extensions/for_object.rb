@@ -10,7 +10,9 @@ module Acl9
       # @param [Subject] subject Subject to add role for
       # @see Acl9::ModelExtensions::Subject#has_role?
       def accepts_role?(role_name, subject)
-        subject.has_role? role_name, self
+        if not subject.nil?
+          subject.has_role? role_name, self
+        end
       end
 
       ##
@@ -20,7 +22,9 @@ module Acl9
       # @param [Subject] subject Subject to add role for
       # @see Acl9::ModelExtensions::Subject#has_role!
       def accepts_role!(role_name, subject)
-        subject.has_role! role_name, self
+        if not subject.nil?
+          subject.has_role! role_name, self
+        end
       end
 
       ##
@@ -30,7 +34,9 @@ module Acl9
       # @param [Subject] subject Subject to remove role from
       # @see Acl9::ModelExtensions::Subject#has_no_role!
       def accepts_no_role!(role_name, subject)
-        subject.has_no_role! role_name, self
+        if not subject.nil?
+          subject.has_no_role! role_name, self
+        end
       end
 
       ##
@@ -40,7 +46,9 @@ module Acl9
       # @return [Boolean] Returns true if +subject+ has any roles on this object.
       # @see Acl9::ModelExtensions::Subject#has_roles_for?
       def accepts_roles_by?(subject)
-        subject.has_roles_for? self
+        if not subject.nil?
+          subject.has_roles_for? self
+        end
       end
 
       alias :accepts_role_by? :accepts_roles_by?
@@ -52,7 +60,9 @@ module Acl9
       # @param [Subject] subject Subject to query roles
       # @see Acl9::ModelExtensions::Subject#roles_for
       def accepted_roles_by(subject)
-        subject.roles_for self
+        if not subject.nil?
+          subject.roles_for self
+        end
       end
     end
   end
