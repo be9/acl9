@@ -121,14 +121,13 @@ class HelperTest < Test::Unit::TestCase
     obj = Object.new
     def obj.name; 'persia'; end
 
-    k.show_to('hamlet', :of => obj) { 'hello my prince' }.should == ''
+    k.show_to('hamlet', :of => obj) { 'hello my prince' }.should == nil
   end
 
   it "has :show_to nothing to NotLoggedIn" do
     k = Klass2.new
     k.action_name = 'be'
     message = 'hello hamlet'
-    k.show_to(:hamlet) { message }.should == ''
+    k.show_to(:hamlet) { message }.should == nil
   end
-
 end

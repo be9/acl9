@@ -24,8 +24,8 @@ module Acl9
     #     <% end %>
     #
     def show_to(*args, &block)
-      user = eval(Acl9.config[:default_subject_method].to_s)
-      return '' if user.nil?
+      user = send(Acl9.config[:default_subject_method])
+      return if user.nil?
 
       has_any = false
 
@@ -36,7 +36,7 @@ module Acl9
         has_any = args.detect { |role| user.has_role?(role) }
       end
 
-      has_any ? capture(&block) : ''
+      has_any ? capture(&block) : nil
     end
   end
 end
