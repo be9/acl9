@@ -1,7 +1,7 @@
 require 'rubygems'
 
 gem 'jnunemaker-matchy', '>= 0.4.0'
-gem 'jeremymcanally-context', '>= 0.5.5'
+gem 'be9-context', '>= 0.5.5'
 
 require 'test/unit'
 require 'context'

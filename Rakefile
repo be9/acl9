@@ -15,7 +15,7 @@ begin
     s.description = "Role-based authorization system for Rails with a nice DSL for access control lists"
     s.authors = ["oleg dashevskii"]
     s.files = FileList["[A-Z]*", "{lib,test}/**/*.rb"]
-    s.add_development_dependency "jeremymcanally-context", ">= 0.5.5"
+    s.add_development_dependency "be9-context", ">= 0.5.5"
     s.add_development_dependency "jnunemaker-matchy", ">= 0.4.0"
   end
   Jeweler::GemcutterTasks.new
