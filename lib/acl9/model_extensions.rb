@@ -79,7 +79,7 @@ module Acl9
         role       = options[:role_class_name] || Acl9::config[:default_role_class_name]
         role_table = role.constantize.table_name
 
-        join_table = ActiveRecord::Base.send(:join_table_name, role_table, subj_table)
+        join_table = options[:join_table_name] || ActiveRecord::Base.send(:join_table_name, role_table, subj_table)
 
         sql_tables = <<-EOS
           FROM #{subj_table}
