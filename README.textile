@@ -53,6 +53,8 @@ h1. Installation
 
 Acl9 can be installed as a gem from "gemcutter":http://gemcutter.org.
 
+h2. in Rails 2.3
+
 Add the following line to your @config/environment.rb@:
 
 <pre><code>
@@ -65,6 +67,22 @@ Alternatively you can install Acl9 as a plugin:
 
 <pre><code>
   script/plugin install git://github.com/be9/acl9.git
+</pre></code>
+
+h2. in Rails 3.0
+
+Add the following line to your @Gemfile@:
+
+<pre><code>
+  gem "acl9"
+</pre></code>
+
+Then run @bundle install@ and you're done!
+
+Alternatively you can install Acl9 as a plugin:
+
+<pre><code>
+  rails plugin install git://github.com/be9/acl9.git
 </pre></code>
 
 h1. Basics
