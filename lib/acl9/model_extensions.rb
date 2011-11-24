@@ -49,7 +49,19 @@ module Acl9
 
         include Acl9::ModelExtensions::ForSubject
       end
+      
+      # Deprecated and now removed from rails 3.1. Adding the source from : 3.1
+      # activerecord/lib/active_record/associations/builder/has_and_belongs_to_many.rb, line 51
+      def join_table_name(first_table_name, second_table_name)
+        if first_table_name < second_table_name
+          join_table = "#{first_table_name}_#{second_table_name}"
+        else
+          join_table = "#{second_table_name}_#{first_table_name}"
+        end
 
+        self.table_name_prefix + join_table + self.table_name_suffix
+      end  
+      
       # Add role query and set methods to the class (making it an auth object class).
       #
       # @param [Hash] options the options for tuning
