@@ -36,7 +36,7 @@ module Acl9
       	assoc = options[:association_name] || Acl9::config[:default_association_name]
         role = options[:role_class_name] || Acl9::config[:default_role_class_name]
         join_table = options[:join_table_name] || Acl9::config[:default_join_table_name] ||
-                    join_table_name(undecorated_table_name(self.to_s), undecorated_table_name(role))
+            self.table_name_prefix + [undecorated_table_name(self.to_s), undecorated_table_name(role)].sort.join("_") + self.table_name_suffix
 
         has_and_belongs_to_many assoc, :class_name => role, :join_table => join_table
 
