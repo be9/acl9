@@ -1,8 +1,3 @@
-require 'rubygems'
-
-gem 'jnunemaker-matchy', '>= 0.4.0'
-gem 'be9-context', '>= 0.5.5'
-
 require 'test/unit'
 require 'context'
 require 'matchy'
@@ -10,6 +5,7 @@ require 'active_support'
 require 'active_record'
 require 'action_controller'
 require 'action_controller/test_process'
+require 'turn'
 
 ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => 'test.sqlite3')
 
