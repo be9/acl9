@@ -128,7 +128,7 @@ module Acl9
       def acts_as_authorization_role(options = {})
 	subject = options[:subject_class_name] || Acl9::config[:default_subject_class_name]
 	join_table = options[:join_table_name] || Acl9::config[:default_join_table_name] ||
-		    self.table_name_prefix + [undecorated_table_name(self.to_s), undecorated_table_name(role)].sort.join("_") + self.table_name_suffix
+		    self.table_name_prefix + [undecorated_table_name(self.to_s), undecorated_table_name(subject)].sort.join("_") + self.table_name_suffix
 		    # comment out use deprecated API
 		    #join_table_name(undecorated_table_name(self.to_s), undecorated_table_name(subject))
 
