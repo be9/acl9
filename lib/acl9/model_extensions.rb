@@ -126,15 +126,17 @@ module Acl9
       # @see Acl9::ModelExtensions::Object#accepts_role?
       # @see Acl9::ModelExtensions::Object#accepts_no_role!
       def acts_as_authorization_role(options = {})
-        subject = options[:subject_class_name] || Acl9::config[:default_subject_class_name]
-        join_table = options[:join_table_name] || Acl9::config[:default_join_table_name] ||
-                     join_table_name(undecorated_table_name(self.to_s), undecorated_table_name(subject))
+	subject = options[:subject_class_name] || Acl9::config[:default_subject_class_name]
+	join_table = options[:join_table_name] || Acl9::config[:default_join_table_name] ||
+		    self.table_name_prefix + [undecorated_table_name(self.to_s), undecorated_table_name(role)].sort.join("_") + self.table_name_suffix
+		    # comment out use deprecated API
+		    #join_table_name(undecorated_table_name(self.to_s), undecorated_table_name(subject))
 
-        has_and_belongs_to_many subject.demodulize.tableize.to_sym,
-          :class_name => subject,
-          :join_table => join_table
+	has_and_belongs_to_many subject.demodulize.tableize.to_sym,
+	  :class_name => subject,
+	  :join_table => join_table
 
-        belongs_to :authorizable, :polymorphic => true
+	belongs_to :authorizable, :polymorphic => true
       end
     end
   end
