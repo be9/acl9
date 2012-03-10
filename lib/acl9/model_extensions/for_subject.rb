@@ -134,7 +134,7 @@ module Acl9
           lambda { |role| role.authorizable.nil? }
         else
           lambda do |role|
-            role.authorizable_type == object.class.base_class.to_s && role.authorizable == object
+            role.authorizable_type == object.class.base_class.to_s && role.authorizable_id == object.id
           end
         end
       end
