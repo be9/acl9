@@ -33,10 +33,9 @@ module Acl9
       # @see Acl9::ModelExtensions::Subject
       #
       def acts_as_authorization_subject(options = {})
-      	assoc = options[:association_name] || Acl9::config[:default_association_name]
+        assoc = options[:association_name] || Acl9::config[:default_association_name]
         role = options[:role_class_name] || Acl9::config[:default_role_class_name]
-        join_table = options[:join_table_name] || Acl9::config[:default_join_table_name] ||
-            self.table_name_prefix + [undecorated_table_name(self.to_s), undecorated_table_name(role)].sort.join("_") + self.table_name_suffix
+        join_table = options[:join_table_name] || Acl9::config[:default_join_table_name] || self.table_name_prefix + [undecorated_table_name(self.to_s), undecorated_table_name(role)].sort.join("_") + self.table_name_suffix
 
         has_and_belongs_to_many assoc, :class_name => role, :join_table => join_table
 
@@ -79,7 +78,15 @@ module Acl9
         role       = options[:role_class_name] || Acl9::config[:default_role_class_name]
         role_table = role.constantize.table_name
 
-        join_table = options[:join_table_name] || ActiveRecord::Base.send(:join_table_name, role_table, subj_table)
+        join_table = options[:join_table_name]
+        join_table ||= ActiveRecord::Base.send(:join_table_name, 
+          role_table, subj_table) if ActiveRecord::Base.private_methods \
+          .include?('join_table_name')
+        join_table ||= Acl9::config[:default_join_table_name] 
+        join_table ||= self.table_name_prefix \
+            + [undecorated_table_name(self.to_s), 
+            undecorated_table_name(role)].sort.join("_") \
+            + self.table_name_suffix
 
         sql_tables = <<-EOS
           FROM #{subj_table}
@@ -126,17 +133,17 @@ module Acl9
       # @see Acl9::ModelExtensions::Object#accepts_role?
       # @see Acl9::ModelExtensions::Object#accepts_no_role!
       def acts_as_authorization_role(options = {})
-	subject = options[:subject_class_name] || Acl9::config[:default_subject_class_name]
-	join_table = options[:join_table_name] || Acl9::config[:default_join_table_name] ||
-		    self.table_name_prefix + [undecorated_table_name(self.to_s), undecorated_table_name(subject)].sort.join("_") + self.table_name_suffix
-		    # comment out use deprecated API
-		    #join_table_name(undecorated_table_name(self.to_s), undecorated_table_name(subject))
+        subject = options[:subject_class_name] || Acl9::config[:default_subject_class_name]
+        join_table = options[:join_table_name] || Acl9::config[:default_join_table_name] ||
+                    self.table_name_prefix + [undecorated_table_name(self.to_s), undecorated_table_name(subject)].sort.join("_") + self.table_name_suffix
+                    # comment out use deprecated API
+                    #join_table_name(undecorated_table_name(self.to_s), undecorated_table_name(subject))
 
-	has_and_belongs_to_many subject.demodulize.tableize.to_sym,
-	  :class_name => subject,
-	  :join_table => join_table
+        has_and_belongs_to_many subject.demodulize.tableize.to_sym,
+          :class_name => subject,
+          :join_table => join_table
 
-	belongs_to :authorizable, :polymorphic => true
+        belongs_to :authorizable, :polymorphic => true
       end
     end
   end
