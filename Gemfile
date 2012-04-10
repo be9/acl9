@@ -6,7 +6,7 @@ gem "jnunemaker-matchy",  ">= 0.4.0"
 gem "be9-context",        ">= 0.5.5"
 
 gem "rails", "2.3.12"
-gem "sqlite3-ruby"
+gem "sqlite3"
 gem "jeweler"
 
 group :test do
