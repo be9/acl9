@@ -36,7 +36,14 @@ module Acl9
         has_any = args.detect { |role| user.has_role?(role) }
       end
 
-      has_any ? capture(&block) : nil
+      if has_any
+        begin
+          capture( &block )
+        rescue NoMethodError
+          yield( :block )
+        end
+      end
+
     end
   end
 end
