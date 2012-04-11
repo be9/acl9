@@ -1,3 +1,5 @@
+require 'rubygems'
+require 'bundler/setup'
 require 'test/unit'
 require 'context'
 require 'matchy'
