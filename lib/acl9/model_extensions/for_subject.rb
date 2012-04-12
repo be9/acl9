@@ -171,15 +171,14 @@ module Acl9
       def _auth_role_class
         self.class._auth_role_class_name.constantize
       end
-      
+
       def _auth_role_assoc
-      	self.class._auth_role_assoc_name
+        self.class._auth_role_assoc_name
       end
 
       def role_objects
-      	send(self._auth_role_assoc)
+        send(self._auth_role_assoc)
       end
-
     end
   end
 end
