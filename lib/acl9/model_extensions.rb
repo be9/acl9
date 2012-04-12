@@ -79,12 +79,12 @@ module Acl9
         role_table = role.constantize.table_name
 
         join_table = options[:join_table_name]
-        join_table ||= ActiveRecord::Base.send(:join_table_name, 
+        join_table ||= ActiveRecord::Base.send(:join_table_name,
           role_table, subj_table) if ActiveRecord::Base.private_methods \
           .include?('join_table_name')
-        join_table ||= Acl9::config[:default_join_table_name] 
+        join_table ||= Acl9::config[:default_join_table_name]
         join_table ||= self.table_name_prefix \
-            + [undecorated_table_name(self.to_s), 
+            + [undecorated_table_name(self.to_s),
             undecorated_table_name(role)].sort.join("_") \
             + self.table_name_suffix
 
