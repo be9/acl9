@@ -5,10 +5,8 @@ module Acl9
 
       def initialize(*args)
         @default_action = nil
-
         @allows = []
-        @denys = []
-
+        @denys  = []
         @original_args = args
       end
 
@@ -17,21 +15,12 @@ module Acl9
       end
 
       def default_action
-        if @default_action.nil? then :deny else @default_action end
+        @default_action.nil? ? :deny : @default_action
       end
 
       def allowance_expression
-        allowed_expr = if @allows.size > 0
-                         @allows.map { |clause| "(#{clause})" }.join(' || ')
-                       else
-                         "false"
-                       end
-
-        not_denied_expr = if @denys.size > 0
-                            @denys.map { |clause| "!(#{clause})" }.join(' && ')
-                          else
-                            "true"
-                          end
+        allowed_expr    = @allows.any?  ? @allows.map { |clause| "(#{clause})" }.join(' || ') : 'false'
+        not_denied_expr = @denys.any?   ? @denys.map { |clause| "!(#{clause})" }.join(' && ') : 'true'
 
         [allowed_expr, not_denied_expr].
           map { |expr| "(#{expr})" }.
@@ -82,12 +71,8 @@ module Acl9
         end
 
         subsidiary.acl_block!(&block)
-
         action_check = _action_check_expression(args)
-
-        squash = lambda do |rules|
-          action_check + ' && ' + _either_of(rules)
-        end
+        squash = lambda { |rules| action_check + ' && ' + _either_of(rules) }
 
         @allows << squash.call(subsidiary.allows) if subsidiary.allows.size > 0
         @denys  << squash.call(subsidiary.denys)  if subsidiary.denys.size > 0
@@ -112,9 +97,9 @@ module Acl9
 
         role_checks = args.map do |who|
           case who
-          when anonymous() then "#{_subject_ref}.nil?"
-          when logged_in() then "!#{_subject_ref}.nil?"
-          when all()       then "true"
+          when anonymous then "#{_subject_ref}.nil?"
+          when logged_in then "!#{_subject_ref}.nil?"
+          when all       then "true"
           else
             "!#{_subject_ref}.nil? && #{_subject_ref}.has_role?('#{who.to_s.singularize}', #{object})"
           end
@@ -156,18 +141,12 @@ module Acl9
       def _set_action_clause(to, except)
         raise ArgumentError, "both :to and :except cannot be specified in the rule" if to && except
 
-        @action_clause = nil
-
-        action_list = to || except
+        @action_clause  = nil
+        action_list     = to || except
         return unless action_list
 
         expr = _action_check_expression(action_list)
-
-        @action_clause = if to
-                           "#{expr}"
-                         else
-                           "!#{expr}"
-                         end
+        @action_clause = to ? "#{expr}" : "!#{expr}"
       end
 
       def _action_check_expression(action_list)
@@ -199,12 +178,9 @@ module Acl9
         end
 
         case object
-        when Class
-          object.to_s
-        when Symbol
-          _object_ref object
-        when nil
-          "nil"
+        when Class  then object.to_s
+        when Symbol then _object_ref object
+        when nil    then "nil"
         else
           raise ArgumentError, "object specified by preposition can only be a Class or a Symbol"
         end
