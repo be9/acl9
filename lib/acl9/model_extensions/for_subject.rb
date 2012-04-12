@@ -17,7 +17,7 @@ module Acl9
       #
       # In this case manager is anyone who "manages" at least one object.
       #
-      # However, if protect_global_roles option set to +true+, you'll need to 
+      # However, if protect_global_roles option set to +true+, you'll need to
       # explicitly grant global role with same name.
       #
       #   Acl9.config[:protect_global_roles] = true
@@ -26,7 +26,7 @@ module Acl9
       #   user.has_role!(:manager)
       #   user.has_role?(:manager)        # => true
       #
-      # protect_global_roles option is +false+ by default as for now, but this 
+      # protect_global_roles option is +false+ by default as for now, but this
       # may change in future!
       #
       # @return [Boolean] Whether +self+ has a role +role_name+ on +object+.
@@ -134,7 +134,8 @@ module Acl9
           lambda { |role| role.authorizable.nil? }
         else
           lambda do |role|
-            role.authorizable_type == object.class.base_class.to_s && role.authorizable_id == object.id
+            auth_id = role.authorizable_id.kind_of?(String) ? object.id.to_s : object.id
+            role.authorizable_type == object.class.base_class.to_s && role.authorizable_id == auth_id
           end
         end
       end
@@ -165,13 +166,13 @@ module Acl9
           end
         end
       end
-      
+
       protected
 
       def _auth_role_class
         self.class._auth_role_class_name.constantize
       end
-      
+
       def _auth_role_assoc
       	self.class._auth_role_assoc_name
       end
