@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = %w/README.textile TODO/
   s.rdoc_options      = ["--charset=UTF-8"]
 
-  s.add_dependency "rails", "2.3.12"
+  s.add_dependency "rails", ">=2.3.12"
 
   s.add_development_dependency "be9-context",       ">= 0.5.5"
   s.add_development_dependency "jnunemaker-matchy", ">= 0.4.0"

@@ -35,6 +35,16 @@ module Acl9
       #
       # @see Acl9::ModelExtensions::Object#accepts_role?
       def has_role?(role_name, object = nil)
+        if cache_enabled?
+          Rails.cache.fetch(cache_key(role_name, object), :expires_in => ::Acl9.config[:cache_ttl]) { 
+            has_role_not_cached?(role_name, object) ? 1 : 0 
+          }.to_i == 1
+        else
+          has_role_not_cached?(role_name, object)
+        end
+      end
+      
+      def has_role_not_cached?(role_name, object = nil)
         !! if object.nil? && !::Acl9.config[:protect_global_roles]
           self.role_objects.find_by_name(role_name.to_s) ||
           self.role_objects.member?(get_role(role_name, nil))
@@ -63,7 +73,9 @@ module Acl9
           role = self._auth_role_class.create(role_attrs)
         end
 
-        self.role_objects << role if role && !self.role_objects.exists?(role.id)
+        result = self.role_objects << role if role && !self.role_objects.exists?(role.id)
+        cache_expiry if cache_enabled?        
+        result
       end
 
       ##
@@ -162,11 +174,34 @@ module Acl9
         if role
           self.role_objects.delete role
           if role.send(self._auth_subject_class_name.demodulize.tableize).empty?
-            role.destroy unless role.respond_to?(:system?) && role.system?
+            unless role.respond_to?(:system?) && role.system?
+              result = role.destroy
+              cache_expiry if cache_enabled?
+              result
+            end
           end
         end
       end
 
+      def cache_enabled?
+        ::Acl9.config[:cache] && Rails.application.config.cache_store
+      end
+
+      def cache_expiry
+        pr = ::Acl9.config[:cache_prefix]
+        Rails.cache.increment("#{pr}/version/#{self.class.name.downcase}/#{self.id}")
+      end
+      
+      def cache_key(role_name = nil, obj = nil)
+        pr = ::Acl9.config[:cache_prefix]
+        vr = Rails.cache.fetch("#{pr}/version/#{self.class.name.downcase}/#{self.id}", :raw => true, :expires_in => ::Acl9.config[:cache_ttl]) { DateTime.current.to_i }
+        
+        ck  = "#{pr}/#{self.class.name.downcase}/#{self.id.to_s}"
+        ck += "/#{role_name.to_s}" unless role_name.nil?
+        ck += "/#{obj.class.name.downcase}/#{obj.id.to_s}" unless obj.nil?
+        ck += "/#{vr.to_s}"
+      end
+      
       protected
 
       def _auth_role_class

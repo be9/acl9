@@ -10,6 +10,9 @@ module Acl9
     :default_subject_method     => :current_user,
     :default_association_name   => :role_objects,
     :protect_global_roles       => false,
+    :cache                      => false,
+    :cache_prefix               => 'acl9',
+    :cache_ttl                  => 120.minutes,
   }
 
   mattr_reader :config
