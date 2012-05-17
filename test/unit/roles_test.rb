@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class UserTest < ActiveSupport::TestCase
+class RolesTest < ActiveSupport::TestCase
   setup { @user = Factory.create :user }
 
   context "User can be assigned roles" do
@@ -59,5 +59,26 @@ class UserTest < ActiveSupport::TestCase
       assert_equal 1, roles.size
       assert_equal 'admin', roles.first.name
     end
+  end
+
+  context "string primary keys" do
+    setup do
+      @bar  = Bar.create
+      @uuid = Uuid.create :uuid => 'C41642EE-2780-0001-189F-17F3101B26E0'
+    end
+
+    should "know how to work with strings" do
+      assert @bar.has_role!( :owner, @uuid )
+      assert @bar.has_role?( :owner, @uuid )
+      assert role = @bar.uid_roles.first
+
+      assert_equal @uuid.id, role.authorizable_id
+    end
+  end
+
+  def teardown
+    Uuid.delete_all
+    User.delete_all
+    Foo.delete_all
   end
 end
