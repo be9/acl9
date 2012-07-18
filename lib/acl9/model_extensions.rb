@@ -88,22 +88,17 @@ module Acl9
             undecorated_table_name(role)].sort.join("_") \
             + self.table_name_suffix
 
-        sql_tables = <<-EOS
-          FROM #{subj_table}
-          INNER JOIN #{join_table} ON #{subj_col}_id = #{subj_table}.id
-          INNER JOIN #{role_table} ON #{role_table}.id = #{role.underscore}_id
-        EOS
-
-        sql_where = <<-'EOS'
-          WHERE authorizable_type = '#{self.class.base_class.to_s}'
-          AND authorizable_id = #{column_for_attribute(self.class.primary_key).text? ? "'#{id}'": id}
-        EOS
-
         has_many :accepted_roles, :as => :authorizable, :class_name => role, :dependent => :destroy
 
         has_many :"#{subj_table}",
-          :finder_sql  => ("SELECT DISTINCT #{subj_table}.*" + sql_tables + sql_where),
-          :counter_sql => ("SELECT COUNT(DISTINCT #{subj_table}.id)" + sql_tables + sql_where),
+          :finder_sql => proc { "SELECT DISTINCT #{subj_table}.* " +
+                                "FROM #{subj_table} INNER JOIN #{join_table} ON #{subj_col}_id = #{subj_table}.id " +
+                                "INNER JOIN #{role_table} ON #{role_table}.id = #{role.underscore}_id " +
+                                "WHERE authorizable_type = '#{self.class.base_class.to_s}' AND authorizable_id = #{id} "},
+          :counter_sql => proc { "SELECT COUNT(DISTINCT #{subj_table}.id)" + 
+                                 "FROM #{subj_table} INNER JOIN #{join_table} ON #{subj_col}_id = #{subj_table}.id " +
+                                 "INNER JOIN #{role_table} ON #{role_table}.id = #{role.underscore}_id " +
+                                 "WHERE authorizable_type = '#{self.class.base_class.to_s}' AND authorizable_id = #{id} "},
           :readonly => true
 
         include Acl9::ModelExtensions::ForObject
