@@ -88,8 +88,13 @@ module Acl9
       alias everybody all
       alias anyone all
 
+      def _permitted_allow_deny_option!(key)
+        raise ArgumentError, "#{key} is not a valid option" unless [:to, :except, :if, :unless, *VALID_PREPOSITIONS].include?(key.to_sym)
+      end
+
       def _parse_and_add_rule(*args)
         options = args.extract_options!
+        options.keys.each { |key| _permitted_allow_deny_option!(key) }
 
         _set_action_clause(options.delete(:to), options.delete(:except))
 
