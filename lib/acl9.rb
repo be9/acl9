@@ -8,7 +8,7 @@ module Acl9
     :default_role_class_name    => 'Role',
     :default_subject_class_name => 'User',
     :default_subject_method     => :current_user,
-    :default_association_name   => :role_objects,
+    :default_association_name   => :role_objects_assoc,
     :protect_global_roles       => false,
     :cache                      => false,
     :cache_prefix               => 'acl9',
