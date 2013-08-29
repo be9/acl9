@@ -155,7 +155,7 @@ module Acl9
                  ]
                end
 
-        self._auth_role_class.first :conditions => cond
+        self._auth_role_class.where(cond).first
       end
 
       def delete_role(role)
