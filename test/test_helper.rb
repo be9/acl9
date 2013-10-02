@@ -1,13 +1,14 @@
 require 'rubygems'
 require 'bundler/setup'
-require 'test/unit'
 require 'context'
 require 'matchy'
 require 'active_support'
 require 'active_record'
+require 'test/unit'
 require 'action_controller'
 require 'action_controller/test_process'
 require 'turn'
+
 
 ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => 'test.sqlite3')
 
