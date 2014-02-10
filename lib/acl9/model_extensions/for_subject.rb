@@ -128,6 +128,12 @@ module Acl9
 
       def role_selecting_lambda(object)
         case object
+        when ActiveRecord::Relation
+          lambda do |role|
+            auth_id = object.pluck(:id)
+            auth_id.map!(&:to_s) if role.authorizable_id.kind_of?(String)
+            role.authorizable_type == object.name && auth_id.include?(role.authorizable_id)
+          end
         when Class
           lambda { |role| role.authorizable_type == object.to_s }
         when nil
@@ -144,6 +150,8 @@ module Acl9
         role_name = role_name.to_s
 
         cond = case object
+               when ActiveRecord::Relation
+                 [ 'name = ? and authorizable_type = ? and authorizable_id IN (?)', role_name, object.base_class.to_s, object.pluck(:id) ]
                when Class
                  [ 'name = ? and authorizable_type = ? and authorizable_id IS NULL', role_name, object.to_s ]
                when nil
