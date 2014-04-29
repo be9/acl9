@@ -44,6 +44,22 @@ module Acl9
         end
       end
 
+      def has_roles?(role_names, object = nil)
+        !! if object.nil? && !::Acl9.config[:protect_global_roles]
+          self.role_objects.find_by_name(role_name.to_s) ||
+          role_names.each do |role_name|
+            return true if self.role_objects.member?(get_role(role_name, nil))
+          end
+        else
+          role_names.each do |role_name|
+            role = get_role(role_name, object)
+            return true if role && self.role_objects.exists?(role.id)
+          end
+        end
+
+        false
+      end
+
       ##
       # Add specified role on +object+ to +self+.
       #
