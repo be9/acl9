@@ -6,7 +6,7 @@ subsystems which can be used separately.
 *Role control subsystem* allows you to set and query user roles for various objects.
 
 *Access control subsystem* allows you to specify different role-based access rules
-inside controllers. 
+inside controllers.
 
 A bunch of access rules is translated into a complex
 boolean expression. Then it's turned into a lambda or a method and can
@@ -46,7 +46,7 @@ You may find tutorials and additional docs on the "wiki page":http://wiki.github
 
 Rdocs are available "here":http://rdoc.info/projects/be9/acl9.
 
-If you have questions, please post to the 
+If you have questions, please post to the
 "acl9-discuss group":http://groups.google.com/group/acl9-discuss
 
 h1. Installation
@@ -103,7 +103,7 @@ for that purpose, as it's simple, clean and at the same time very configurable.
 
 h2. Roles
 
-Role is an abstraction. You could directly assign permissions to user accounts in 
+Role is an abstraction. You could directly assign permissions to user accounts in
 your system, but you'd not want to! Way more manageable solution is to assign permissions
 to roles and roles further to users.
 
@@ -125,7 +125,7 @@ _Editor-in-chief_ should be able to change everything.
 We clearly see that journalists and section editors are tied to a specific section, whereas
 editor-in-chief is a role with global scope.
 
-h2. Role interface 
+h2. Role interface
 
 All permission checks in Acl9 are boiled down to calls of a single method:
 
@@ -142,8 +142,8 @@ also implemented it by hand (see _Coming up with your own role implementation_ b
 
 h1. Acl9 role control subsystem
 
-Role control subsystem has been lifted from 
-"Rails authorization plugin":http://github.com/DocSavage/rails-authorization-plugin, 
+Role control subsystem has been lifted from
+"Rails authorization plugin":http://github.com/DocSavage/rails-authorization-plugin,
 but undergone some modifications.
 
 It's based on two tables in the database. First, role table, which stores pairs @[role_name, object]@
@@ -168,6 +168,8 @@ The structure of @roles@ table is as follows:
     t.integer  :authorizable_id
     t.timestamps
   end
+
+  add_index :roles, [:authorizable_type, :authorizable_id]
 </code></pre>
 
 Note that you will almost never use the @Role@ class directly.
@@ -180,7 +182,7 @@ h2. Subject model
   end
 </code></pre>
 
-You won't need any specific columns in the @users@ table, but 
+You won't need any specific columns in the @users@ table, but
 there should be a join table:
 
 <pre><code>
@@ -189,6 +191,9 @@ there should be a join table:
     t.references  :role
     t.timestamps
   end
+
+  add_index :roles_users, :user_id
+  add_index :roles_users, :role_id
 </code></pre>
 
 h2. Object model
@@ -200,7 +205,7 @@ as such.
   class Foo < ActiveRecord::Base
     acts_as_authorization_object
   end
-  
+
   class Bar < ActiveRecord::Base
     acts_as_authorization_object
   end
@@ -214,7 +219,7 @@ A call of @acts_as_authorization_subject@ defines following methods on the model
 
 @subject.has_role?(role, object = nil)@. Returns @true@ of @false@ (has or has not).
 
-@subject.has_role!(role, object = nil)@. Assigns a @role@ for the @object@ to the @subject@. 
+@subject.has_role!(role, object = nil)@. Assigns a @role@ for the @object@ to the @subject@.
 Does nothing is subject already has such a role.
 
 @subject.has_no_role!(role, object = nil)@. Unassigns a role from the @subject@.
@@ -239,7 +244,7 @@ A call of @acts_as_authorization_object@ defines following methods on the model:
 @object.accepts_role!(role_name, subject)@. An alias for @subject.has_role!(role_name, object)@.
 
 @object.accepts_no_role!(role_name, subject)@. An alias for @subject.has_no_role!(role_name, object)@.
-      
+
 @object.accepts_roles_by?(subject)@. An alias for @subject.has_roles_for?(object)@.
 
 @object.accepts_role_by?(subject)@. Same as @accepts_roles_by?@.
@@ -301,7 +306,7 @@ Note that you'll need to change your database structure appropriately:
     t.integer  :authorizable_id
     t.timestamps
   end
-  
+
   create_table "account_roles_accounts", :id => false, :force => true do |t|
     t.references  :account
     t.references  :account_role
@@ -329,10 +334,10 @@ as a string or as a symbol.
   user.has_role? 'admin', foo         # => false
 
   user.has_role! :manager, foo
-  
+
   user.has_role? :manager, foo        # => true
   foo.accepts_role? :manager, user    # => true
-  
+
   user.has_roles_for? foo             # => true
 </code></pre>
 
@@ -387,7 +392,7 @@ column to your @User@ class:
     def has_role?(role_name, obj=nil)
       self.role == role_name
     end
-    
+
     def has_role!(role_name, obj=nil)
       self.role = role_name
       save!
@@ -406,7 +411,7 @@ from unauthorized access. Acl9 provides a nice DSL for writing access rules.
 
 h2. Allow and deny
 
-Access control is mostly about allowing and denying. So there are two  
+Access control is mostly about allowing and denying. So there are two
 basic methods: @allow@ and @deny@. They have the same syntax:
 
 <pre><code>
@@ -422,7 +427,7 @@ ROLE_LIST is a list of roles (at least 1 role should be there). So,
   allow :manager, :admin
   deny  :banned
 </code></pre>
-will match holders of global role _manager_ *and* holders of global role _admin_ as allowed.  
+will match holders of global role _manager_ *and* holders of global role _admin_ as allowed.
 On the contrary, holders of _banned_ role will match as denied.
 
 Basically this snippet is equivalent to
@@ -465,7 +470,7 @@ use object and class roles in the ACL block.
   deny  :hated, :by => :us
 </code></pre>
 
-To specify an object you use one of the 6 preposition options: 
+To specify an object you use one of the 6 preposition options:
 * :of
 * :at
 * :on
@@ -481,7 +486,7 @@ a class role. E.g. @allow :responsible, :for => Widget@ becomes @subject.has_rol
 Symbol is trickier, it means that the appropriate instance variable of the controller is taken
 as an object.
 
-@allow :possessor, :of => :foo@ is translated into 
+@allow :possessor, :of => :foo@ is translated into
 <code>subject.has_role?('possessor', controller.instance_variable_get('@foo'))</code>.
 
 Checking against an instance variable has sense when you have another _before filter_ which is executed
@@ -533,7 +538,7 @@ There are three pseudo-roles in the ACL: @all@, @anonymous@ and @logged_in@.
 
 @allow all@ will always match (as well as @deny all@).
 
-@allow anonymous@ and @deny anonymous@ will match when user is anonymous, i.e. subject is @nil@. 
+@allow anonymous@ and @deny anonymous@ will match when user is anonymous, i.e. subject is @nil@.
 You may also use a shorter notation: @allow nil@ (@deny nil@).
 
 @logged_in@ is direct opposite of @anonymous@, so @allow logged_in@ will match if the user is logged in
@@ -556,7 +561,7 @@ current action should be _delete_ or _destroy_.
 
 In the second rule anonymous user access is denied for all actions, except _index_ and _show_.
 
-You may not specify both @:to@ and @:except@. 
+You may not specify both @:to@ and @:except@.
 
 Note that you can use actions block instead of @:to@ (see _Actions block_
 below). You can also use @:only@ and @:except@ options in the
@@ -604,7 +609,7 @@ if you don't do a @default@ call at all.
 h3. Matching algorithm
 
 First of all, regardless of the mode, all @allow@ matches are OR'ed together and all @deny@ matches
-are OR'ed as well. 
+are OR'ed as well.
 
 We'll express this in the following manner:
 
@@ -646,7 +651,7 @@ An example from the imaginary @PostsController@:
 
 <pre><code>
   allow :admin
-  
+
   actions :index, :show do
     allow all
   end
@@ -668,7 +673,7 @@ This is equivalent to:
 
 <pre><code>
   allow :admin
-  
+
   allow all, :to => [:index, :show]
   allow :managers, :of => Post, :to => [:new, :create]
   allow :owner, :of => :post, :to => [:edit, :update]
@@ -688,7 +693,7 @@ By calling @access_control@ in your controller you can get your ACL block transl
 # a method, installed with @before_filter@ and raising @Acl9::AccessDenied@ exception on occasion.
 # a method, returning @true@ or @false@, whether access is allowed or denied.
 
-First case is by default. You can catch the exception with @rescue_from@ call and do something 
+First case is by default. You can catch the exception with @rescue_from@ call and do something
 you like: make a redirect, or render "Access denied" template, or whatever.
 
 Second case is obtained with specifying method name as an argument to
@@ -700,11 +705,11 @@ name. You'll get an ordinary method which you can call anywhere you want.
 
 h3. :subject_method
 
-Acl9 obtains the subject instance by calling specific method of the controller. By default it's 
+Acl9 obtains the subject instance by calling specific method of the controller. By default it's
 @:current_user@, but you may change it.
 
 <pre><code>
-  class MyController < ApplicationController 
+  class MyController < ApplicationController
     access_control :subject_method => :current_account do
       allow :nifty
       # ...
@@ -730,7 +735,7 @@ h3. :as_method
 In the case
 
 <pre><code>
-  class NiftyController < ApplicationController 
+  class NiftyController < ApplicationController
     access_control :as_method => :acl do
       allow :nifty
       # ...
@@ -746,7 +751,7 @@ Instead of using @:as_method@ you may specify the name of the method as a positi
 to @access_control@:
 
 <pre><code>
-  class MyController < ApplicationController 
+  class MyController < ApplicationController
     access_control :acl do
       # ...
     end
@@ -764,7 +769,7 @@ method which won't raise @Acl9::AccessDenied@ exception, but rather return
 @true@ or @false@ (access allowed/denied).
 
 <pre><code>
-  class SecretController < ApplicationController 
+  class SecretController < ApplicationController
     access_control :secret_access?, :filter => false do
       allow :james_bond
       # ...
@@ -785,7 +790,7 @@ method which won't raise @Acl9::AccessDenied@ exception, but rather return
     def _secret_index
       # ...
     end
-    
+
     def _ordinary_index
       # ...
     end
@@ -795,7 +800,7 @@ method which won't raise @Acl9::AccessDenied@ exception, but rather return
 The generated method can receive an objects hash as an argument. In this example,
 
 <pre><code>
-  class LolController < ApplicationController 
+  class LolController < ApplicationController
     access_control :lolcats?, :filter => false do
       allow :cats, :by => :lol
       # ...
@@ -818,7 +823,7 @@ Sometimes you want to have a boolean method (like @:filter => false@) accessible
 in your views. Acl9 can call @helper_method@ for you:
 
 <pre><code>
-  class LolController < ApplicationController 
+  class LolController < ApplicationController
     access_control :helper => :lolcats? do
       allow :cats, :by => :lol
       # ...
@@ -829,7 +834,7 @@ in your views. Acl9 can call @helper_method@ for you:
 That's equivalent to
 
 <pre><code>
-  class LolController < ApplicationController 
+  class LolController < ApplicationController
     access_control :lolcats?, :filter => false do
       allow :cats, :by => :lol
       # ...
@@ -845,7 +850,7 @@ Other options will be passed to @before_filter@. As such, you may use @:only@ an
 the action scope of the whole ACL block.
 
 <pre><code>
-  class OmgController < ApplicationController 
+  class OmgController < ApplicationController
     access_control :only => [:index, :show] do
       allow all
       deny :banned
@@ -858,7 +863,7 @@ the action scope of the whole ACL block.
 is basically equivalent to
 
 <pre><code>
-  class OmgController < ApplicationController 
+  class OmgController < ApplicationController
     access_control do
       actions :index, :show do
         allow all
@@ -889,7 +894,7 @@ way to generate helper methods directly, like this:
 </code></pre>
 
 Here we mix in @Acl9Helpers@ module which brings in @access_control@ method and call it,
-obtaining @show_settings?@ method. 
+obtaining @show_settings?@ method.
 
 An imaginary view:
 
