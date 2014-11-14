@@ -1,0 +1,1 @@
+Dummy::Application.config.secret_key_base = 'b29f2acba41e296f52ae4e3d11de570df29f69fe1ca9cad18634fec6fc2569d0b32ce5f66a822758a80bf6c9c828b038e0366f098397df636479b4ec437c9a46'

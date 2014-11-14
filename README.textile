@@ -251,6 +251,8 @@ A call of @acts_as_authorization_object@ defines following methods on the model:
 
 @object.accepts_roles_by(subject)@. An alias for @subject.roles_for(object)@.
 
+TODO - add the `accepted_roles` stuff in here.
+
 h2. Custom class names
 
 You may want to deviate from default @User@ and @Role@ class names. That can easily be done with
@@ -725,6 +727,8 @@ Subject method can also be changed globally. Place the following into @config/in
   Acl9::config[:default_subject_method] = :current_account
 </code></pre>
 
+TODO add docs for protect_global_roles
+
 h3. :debug
 
 @:debug => true@ will output the filtering expression into the debug log. If
@@ -816,6 +820,8 @@ you may not only call @lolcats?@ with no arguments, which will basically return
 
 but also as @lolcats?(:lol => Lol.find(params[:lol]))@. The hash will be looked into first,
 even if you have an instance variable @lol@.
+
+TODO - document `_action` override.
 
 h3. :helper
 
