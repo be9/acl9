@@ -20,15 +20,9 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files  = %w/README.textile TODO/
   s.rdoc_options      = ["--charset=UTF-8"]
 
-  s.add_dependency "activerecord", "~> 2.3.12"
-  s.add_dependency "actionpack", "~> 2.3.12"
-  s.add_dependency "activesupport", "~> 2.3.12"
+  s.add_dependency "rails",  "~> 4.0.0"
 
-  s.add_development_dependency "be9-context",       ">= 0.5.5"
-  s.add_development_dependency "jnunemaker-matchy", ">= 0.4.0"
-  s.add_development_dependency "rake"
   s.add_development_dependency "yard"
   s.add_development_dependency 'sqlite3'
-  s.add_development_dependency 'turn'
 end
 

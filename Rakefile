@@ -1,6 +1,6 @@
 #!/usr/bin/env rake
 require 'bundler/gem_tasks'
-require 'rake'
+
 require 'rake/testtask'
 require 'yard'
 
@@ -16,3 +16,4 @@ end
 YARD::Rake::YardocTask.new do |t|
   t.files   = ['lib/**/*.rb']
 end
+
