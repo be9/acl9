@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.name              = "acl9"
   s.require_paths     = ["lib"]
   s.version           = Acl9::VERSION
+  s.license           = 'MIT'
 
   s.date              = %q{2014-11-20}
   s.rdoc_options      = ["--charset=UTF-8"]
