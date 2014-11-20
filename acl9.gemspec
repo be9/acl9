@@ -17,11 +17,11 @@ Gem::Specification.new do |s|
   s.version           = Acl9::VERSION
 
   s.date              = %q{2010-11-02}
-  s.extra_rdoc_files  = %w/README.textile TODO/
   s.rdoc_options      = ["--charset=UTF-8"]
 
   s.add_dependency "rails",  "~> 4.0.0"
 
+  s.add_development_dependency "RedCloth"
   s.add_development_dependency "yard"
   s.add_development_dependency 'sqlite3'
 end
