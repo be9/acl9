@@ -10,13 +10,12 @@ Gem::Specification.new do |s|
   s.homepage          = "http://github.com/be9/acl9"
 
   s.files             = `git ls-files`.split($\)
-  s.executables       = s.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  s.test_files        = s.files.grep(%r{^(test|spec|features)/})
+  s.test_files        = s.files.grep(%r{^test/})
   s.name              = "acl9"
   s.require_paths     = ["lib"]
   s.version           = Acl9::VERSION
 
-  s.date              = %q{2010-11-02}
+  s.date              = %q{2014-11-20}
   s.rdoc_options      = ["--charset=UTF-8"]
 
   s.add_dependency "rails",  "~> 4.0.0"
