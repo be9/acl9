@@ -7,6 +7,7 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
+    RedCloth (4.2.9)
     actionmailer (4.0.11)
       actionpack (= 4.0.11)
       mail (~> 2.5, >= 2.5.4)
@@ -78,6 +79,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  RedCloth
   acl9!
   sqlite3
   yard
