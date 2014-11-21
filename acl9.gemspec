@@ -16,7 +16,6 @@ Gem::Specification.new do |s|
   s.version           = Acl9::VERSION
   s.license           = 'MIT'
 
-  s.date              = %q{2014-11-20}
   s.rdoc_options      = ["--charset=UTF-8"]
 
   s.add_dependency "rails",  "~> 4.0.0"
