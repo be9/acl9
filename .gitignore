@@ -15,5 +15,7 @@
 **/log/*.log
 **/tmp
 
+/gemfiles/*.lock
+
 /doc
 /.yardoc
