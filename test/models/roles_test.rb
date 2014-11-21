@@ -112,13 +112,13 @@ class RolesTest < ActiveSupport::TestCase
     @user.has_role! :owner, @bar
     @user2.has_role! :owner, @bar
 
-    assert_equal @user2.roles, @user.roles
+    assert_equal @user2.role_objects, @user.role_objects
   end
 
   test "#has_no_role! should unassign a global role from user" do
     set_some_roles
 
-    assert_difference -> { @user.roles.count }, -1 do
+    assert_difference -> { @user.role_objects.count }, -1 do
       assert @user.has_no_role! '3133t'
     end
 
@@ -128,7 +128,7 @@ class RolesTest < ActiveSupport::TestCase
   test "#has_no_role! should unassign an object role from user" do
     set_some_roles
 
-    assert_difference -> { @user.roles.count }, -1 do
+    assert_difference -> { @user.role_objects.count }, -1 do
       assert @user.has_no_role! :manager, @foo
     end
 
@@ -139,7 +139,7 @@ class RolesTest < ActiveSupport::TestCase
   test "#has_no_role! should unassign a class role from user" do
     set_some_roles
 
-    assert_difference -> { @user.roles.count }, -1 do
+    assert_difference -> { @user.role_objects.count }, -1 do
       assert @user.has_no_role! :admin, Foo
     end
 
@@ -150,7 +150,7 @@ class RolesTest < ActiveSupport::TestCase
   test "#has_no_roles_for! should unassign global and class roles with nil object" do
     set_some_roles
 
-    assert_difference -> { @user.roles.count }, -4 do
+    assert_difference -> { @user.role_objects.count }, -4 do
       assert @user.has_no_roles_for!
     end
 
@@ -163,7 +163,7 @@ class RolesTest < ActiveSupport::TestCase
   test "#has_no_roles_for! should unassign object roles" do
     set_some_roles
 
-    assert_difference -> { @user.roles.count }, -2 do
+    assert_difference -> { @user.role_objects.count }, -2 do
       assert @user.has_no_roles_for! @foo
     end
 
@@ -174,7 +174,7 @@ class RolesTest < ActiveSupport::TestCase
   test "#has_no_roles_for! should unassign both class roles and object roles for objects of that class" do
     set_some_roles
 
-    assert_difference -> { @user.roles.count }, -4 do
+    assert_difference -> { @user.role_objects.count }, -4 do
       assert @user.has_no_roles_for! Foo
     end
 
@@ -188,7 +188,7 @@ class RolesTest < ActiveSupport::TestCase
     set_some_roles
 
     @user.has_no_roles!
-    assert_equal 0, @user.roles.count
+    assert_equal 0, @user.role_objects.count
   end
 
   test "should delete unused roles from table" do
