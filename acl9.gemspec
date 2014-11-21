@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
 
   s.rdoc_options      = ["--charset=UTF-8"]
 
-  s.add_dependency "rails",  "~> 4.0.0"
+  s.add_dependency "rails",  ">= 4.0.0"
 
   s.add_development_dependency "RedCloth"
   s.add_development_dependency "yard"

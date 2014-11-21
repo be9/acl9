@@ -1,0 +1,15 @@
+cache: bundler
+language: ruby
+rvm:
+  - 2.0.0
+  - 2.1.2
+  - ruby-head
+
+gemfile:
+  - gemfiles/rails_4.0.gemfile
+  - gemfiles/rails_4.1.gemfile
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - rvm: ruby-head
