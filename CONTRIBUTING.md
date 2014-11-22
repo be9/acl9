@@ -29,7 +29,7 @@ and submit a pull request.
 You should be able to just fork the repo and run `bundle && rake` to see the
 tests running.
 
-We use [Appraisal](thoughtbot/appraisal) to test against multiple versions of
+We use [Appraisal](//github.com/thoughtbot/appraisal) to test against multiple versions of
 Rails, so you can read up on that and use it to test against all the Rails
 versions we support or against a specific one.
 
