@@ -2,12 +2,11 @@ PATH
   remote: .
   specs:
     acl9 (1.0.0)
-      rails (>= 4.0.0)
+      rails (~> 4.0)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    RedCloth (4.2.9)
     actionmailer (4.1.7)
       actionpack (= 4.1.7)
       actionview (= 4.1.7)
@@ -97,7 +96,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  RedCloth
   acl9!
   appraisal
   codeclimate-test-reporter
