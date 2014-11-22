@@ -94,13 +94,13 @@ module ControllerExtensions
     end
 
     test "#allow and #deny should work together inside actions block" do
-      assert @foo = Foo.create
+      assert foo = Foo.create
 
-      assert ( owner = User.create ).has_role! :owner, @foo
+      assert ( owner = User.create ).has_role! :owner, foo
       assert ( hacker = User.create ).has_role! :hacker
       assert hacker.has_role! :the_destroyer
 
-      assert ( another_owner = User.create ).has_role! :owner, @foo
+      assert ( another_owner = User.create ).has_role! :owner, foo
       assert another_owner.has_role! :hacker
 
       @tester.acl_block! do
@@ -120,9 +120,9 @@ module ControllerExtensions
       end
 
       assert set_all_actions
-      permit_some owner,  @all_actions
+      permit_some owner,  @all_actions, :foo => foo
       permit_some hacker, %w(show index destroy)
-      permit_some another_owner, %w(show index destroy)
+      permit_some another_owner, %w(show index destroy), :foo => foo
     end
 
     def set_all_actions

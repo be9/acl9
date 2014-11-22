@@ -57,9 +57,13 @@ class RolesTest < ActiveSupport::TestCase
     assert @foo.accepts_roles_by? @user
   end
 
-  test "should count object role also as global role" do
+  test "should count object role also as global role when :protect_global_roles == false" do
+    Acl9.config[:protect_global_roles] = false
+
     assert @user.has_role! :manager, @foo
     assert @user.has_role? :manager
+
+    Acl9.config[:protect_global_roles] = true
   end
 
   test "should not count object role as object class role" do
@@ -67,14 +71,9 @@ class RolesTest < ActiveSupport::TestCase
     refute @user.has_role? :manager, Foo
   end
 
-  test "don't count object role as global when protect_global_roles == true" do
-    saved_option = Acl9.config[:protect_global_roles]
-    Acl9.config[:protect_global_roles] = true
-
+  test "don't count object role as global" do
     assert @user.has_role! :manager, @foo
     refute @user.has_role? :manager
-
-    Acl9.config[:protect_global_roles] = saved_option
   end
 
   test "#has_role! with class" do
