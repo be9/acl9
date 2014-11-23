@@ -38,7 +38,7 @@ obvious for any developer looking at the controller:
 ```ruby
 class Admin::SchoolsController < ApplicationController
   access_control do
-    allow :support, School
+    allow :support, :of => School
     allow :admins, :managers, :teachers, :of => :school
     deny :teachers, :to => :destroy
 
