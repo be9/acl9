@@ -11,7 +11,7 @@ Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
   test.pattern = 'test/**/*_test.rb'
   test.verbose = false
-  test.options = "--tapy | tapout runtime"
+  test.options = " | tapout runtime"
 end
 
 require 'yard'
