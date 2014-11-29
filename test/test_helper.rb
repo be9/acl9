@@ -10,13 +10,8 @@ require "rails/test_help"
 
 Rails.backtrace_cleaner.remove_silencers! if ENV["BACKTRACE"]
 
-begin
-  orig_stdout = $stdout.dup
-  $stdout.reopen('/dev/null', 'w')
-  ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
-ensure
-  $stdout.reopen(orig_stdout)
-end
+ActiveRecord::Migration.verbose = false
+ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
 
 class ActionController::TestCase
   class << self
