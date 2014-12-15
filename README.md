@@ -99,6 +99,73 @@ user.has_no_role! :support, School
 You can see more about all this stuff in the wiki under [Role
 Subsystem](//github.com/be9/acl9/wiki/Role-Subsystem)
 
+## Configuration
+
+There are five configurable settings. These all have sensible defaults which can
+be easily overridden by merging into the `Acl9::config` hash. You can also
+override each of the `:default_*` settings (dropping the "default_" prefix) in
+your models/controllers - see below for more detail:
+
+### :default_role_class_name
+
+Set to `'Role'` and can be overridden in your "user" model, [see the wiki for more](//github.com/be9/acl9/wiki/Role-Subsystem#custom-class-names).
+ 
+### :default_association_name
+
+Set to `:role_objects` and can be overridden in
+your "user" model, [see the wiki for more](//github.com/be9/acl9/wiki/Role-Subsystem#subject-model).
+We chose a name for this association that was unlikely to conflict with
+existing models but a lot of people override this to be just `:roles`
+
+### :default_subject_class_name
+
+Set to `'User'` and can be overridden in your
+"role" model, [see the wiki for more](//github.com/be9/acl9/wiki/Role-Subsystem#custom-class-names).
+
+### :default_subject_method
+
+Set to `:current_user` and can be overridden in
+your controllers, [see the wiki for more](//github.com/be9/acl9/wiki/Access-Control-Subsystem#subject_method).
+
+### :protect_global_roles
+
+Set to `true` (see "Upgrade Notes" below if you're upgrading) and can only be
+changed by merging into `Acl9::config`.  This setting changes how global roles
+(ie. roles with no object) are treated.
+
+Say we set a role like so:
+
+```ruby
+user.has_role! :admin, school
+```
+
+When `:protect_global_roles` is `true` (as is the default) then `user.has_role?
+:admin` is `false`. Ie. changing the role on a specific instance doesn't impact
+the global role (hence the name).
+
+When `:protect_global_roles` is `false` then `user.has_role? :admin` is `true`.
+Ie. setting a role on a specific instance makes that person a global one of
+those roles.
+
+Basically these are just two different ways of working with roles, if you're
+protecting your global roles then you can use them as sort of a superuser
+version of a given role. So you can have an admin of a school **and** a global
+admin with different privileges.
+
+If you don't protect your global roles then you can use them as a catch-all for
+any specific roles, so then the admins of schools, classrooms and students can
+all be granted a privilege by allowing the global `:admin` role.
+
+### Example
+
+```ruby
+# config/initializers/acl9.rb
+Acl9::config.merge! :default_association_name => :roles
+
+# or...
+Acl9::config[:default_association_name] = :roles
+```
+
 ## Upgrade Notes
 
 Please, PLEASE, **PLEASE** note. If you're upgrading from the `0.x` series of acl9
