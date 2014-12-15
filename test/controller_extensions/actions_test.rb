@@ -163,5 +163,37 @@ module ControllerExtensions
       permit_some member, %w(index show)
       permit_some nil, %w(index show)
     end
+
+    test "multiple allows in an action" do
+      assert ( special = User.create ).has_role! :special
+      assert ( viewer = User.create ).has_role! :viewer
+
+      @tester.acl_block! do
+        action :show do
+          allow all
+          allow :viewer
+        end
+      end
+
+      assert set_all_actions
+      permit_some special, %w(show)
+      permit_some viewer, %w(show)
+    end
+
+    test "multiple allows with logged_in" do
+      assert ( normal = User.create )
+      assert ( viewer = User.create ).has_role! :viewer
+
+      @tester.acl_block! do
+        action :index do
+          allow logged_in
+          allow :viewer
+        end
+      end
+
+      assert set_all_actions
+      permit_some normal, %w(index)
+      permit_some viewer, %w(index)
+    end
   end
 end
