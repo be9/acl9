@@ -26,6 +26,10 @@ and submit a pull request.
 
 ### Setup
 
+We have a `.ruby-version` file, so if you use a ruby manager that
+understands that then you might need to install that version of ruby, but you
+should know how to do that yourself.
+
 You should be able to just fork the repo and run `bundle && rake` to see the
 tests running.
 

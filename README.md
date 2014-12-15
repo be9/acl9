@@ -19,6 +19,8 @@ Acl9 is [Semantically Versioned](http://semver.org/), so just add this to your
 gem 'acl9', '~> 1.0'
 ```
 
+You will need Ruby 2.x
+
 We dropped support for Rails < 4 in the 1.x releases, so if you're still using
 Rails 2.x or 3.x then you'll want this:
 
