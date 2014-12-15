@@ -236,6 +236,34 @@ class RolesTest < ActiveSupport::TestCase
     assert @user.has_role?(:manager, @foo)
   end
 
+  test "remove access for destroyed object" do
+    assert_empty @user.role_objects
+    assert @user.has_role! :admin, @foo
+    refute_empty @user.role_objects
+    assert @user.has_role? :admin, @foo
+
+    assert @foo.destroy
+    refute @foo.accepts_role? :admin, @user
+
+    assert @user.reload
+    assert_empty @user.role_objects
+    refute @user.has_role? :admin, @foo
+  end
+
+  test "remove access for destroyed subject" do
+    assert_empty @foo.accepted_roles
+    assert @foo.accepts_role! :admin, @user
+    refute_empty @foo.accepted_roles
+    assert @foo.accepts_role? :admin, @user
+
+    assert @user.destroy
+    refute @user.has_role? :admin, @foo
+
+    assert @foo.reload
+    assert_empty @foo.accepted_roles
+    refute @foo.accepts_role? :admin, @user
+  end
+
   private
 
   def set_some_roles

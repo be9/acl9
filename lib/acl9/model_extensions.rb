@@ -24,7 +24,7 @@ module Acl9
       #   end
       #
       #   user = User.new
-      #   user.roles             #=> returns Role objects, associated with the user
+      #   user.role_objects      #=> returns Role objects, associated with the user
       #   user.has_role!(...)
       #   user.has_no_role!(...)
       #
@@ -38,6 +38,8 @@ module Acl9
         join_table = options[:join_table_name] || Acl9::config[:default_join_table_name] || self.table_name_prefix + [undecorated_table_name(self.to_s), undecorated_table_name(role)].sort.join("_") + self.table_name_suffix
 
         has_and_belongs_to_many assoc.to_sym, :class_name => role, :join_table => join_table
+
+        before_destroy :has_no_roles!
 
         cattr_accessor :_auth_role_class_name, :_auth_subject_class_name,
                        :_auth_role_assoc_name
