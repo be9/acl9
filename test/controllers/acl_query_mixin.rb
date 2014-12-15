@@ -4,9 +4,9 @@ module ACLQueryMixin
   def self.included base
     base.class_eval do
       setup do
-        ( @editor = User.create ).has_role! :editor
-        ( @viewer = User.create ).has_role! :viewer
-        ( @owneroffoo = User.create ).has_role! :owner, Foo.first_or_create
+        assert ( @editor = User.create ).has_role! :editor
+        assert ( @viewer = User.create ).has_role! :viewer
+        assert ( @owneroffoo = User.create ).has_role! :owner, Foo.first_or_create
       end
 
       %i[edit update destroy].each do |meth|

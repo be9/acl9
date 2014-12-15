@@ -190,16 +190,23 @@ class RolesTest < ActiveSupport::TestCase
     assert_equal 0, @user.role_objects.count
   end
 
+  test "role setters true even with multiple roles" do
+    assert @user.has_role! :owner, @bar
+    assert @user2.has_role! :owner, @bar
+
+    assert @user.has_no_role! :owner, @bar
+  end
+
   test "should delete unused roles from table" do
     assert @user.has_role! :owner, @bar
     assert @user2.has_role! :owner, @bar
 
     assert_equal 1, Role.count
 
-    @bar.accepts_no_role! :owner, @user2
+    assert @bar.accepts_no_role! :owner, @user2
     assert_equal 1, Role.count
 
-    @bar.accepts_no_role! :owner, @user
+    assert @bar.accepts_no_role! :owner, @user
 
     assert_equal 0, Role.count
   end

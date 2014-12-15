@@ -7,10 +7,16 @@ class SystemRolesTest < ActiveSupport::TestCase
     assert_equal 1, Role.count
 
     assert user = User.create
-    assert user.has_role! :admin
-    assert_equal 1, Role.count
+    assert_difference -> { Role.count }, 0 do
+      assert user.has_role! :admin
+    end
 
-    refute user.has_no_role! :admin
-    assert_equal 1, Role.count
+    assert user.has_role? :admin
+
+    assert_difference -> { Role.count }, 0 do
+      assert user.has_no_role! :admin
+    end
+
+    refute user.has_role? :admin
   end
 end
