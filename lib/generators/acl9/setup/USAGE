@@ -1,0 +1,35 @@
+Description:
+    Installs the basic framework for Acl9. Creates the necessary migration for
+    your new roles table and the join table for associating roles with users.
+
+    The optional arguments are as follows:
+
+        subject:  if you want something other than 'User'
+        role:     if you want something other than 'Role'
+        objects:  space separated list of class names of objects that you can
+                  attach roles to (see the docs)
+
+Examples:
+    `rails g acl9:setup`
+
+        This will create:
+            Migration:      db/migrate/XXX_create_role_tables.rb
+            Role Model:     app/models/role.rb
+            Config:         config/initializers/acl9.rb
+
+        And it will update (or create a skeleton):
+            Subject Model:  app/models/user.rb
+
+    `rails g acl9:install account permission school classroom department`
+
+        This will create:
+            Migration:      db/migrate/XXX_create_permission_tables.rb
+            Role Model:     app/models/permission.rb
+            Config:         config/initializers/acl9.rb
+
+        And it will update (or create a skeleton):
+            Subject Model:  app/models/account.rb
+            Object Models:  app/models/school.rb
+                            app/models/classroom.rb
+                            app/models/department.rb
+
