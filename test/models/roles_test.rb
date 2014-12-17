@@ -8,6 +8,11 @@ class RolesTest < ActiveSupport::TestCase
     assert @bar = Bar.create
   end
 
+  teardown do
+    Acl9.config[:normalize_role_names] = true
+    Acl9.config[:protect_global_roles] = true
+  end
+
   test "should not have any roles by default" do
     %w(user manager admin owner).each do |role|
       refute @user.has_role? role
@@ -62,8 +67,6 @@ class RolesTest < ActiveSupport::TestCase
 
     assert @user.has_role! :manager, @foo
     assert @user.has_role? :manager
-
-    Acl9.config[:protect_global_roles] = true
   end
 
   test "should not count object role as object class role" do
@@ -269,6 +272,44 @@ class RolesTest < ActiveSupport::TestCase
     assert @foo.reload
     assert_empty @foo.accepted_roles
     refute @foo.accepts_role? :admin, @user
+  end
+
+  test "roles ignore pluralization" do
+    assert @user.has_role! :manager
+    assert @user.has_role? :manager
+
+    assert @user.has_role? :managers
+    assert @user.has_role? 'Manager'
+    assert @user.has_role? 'Managers'
+
+    assert_nil @user.has_role! :managers
+    assert_nil @user.has_role! 'Manager'
+    assert_nil @user.has_role! 'Managers'
+
+    assert @user2.has_role! :managers
+    assert @user2.has_role? :managers
+    assert @user2.has_role? :manager
+
+    assert_nil @user2.has_role! :manager
+  end
+
+  test "non-normalized roles work properly" do
+    Acl9.config[:normalize_role_names] = false
+    assert @user.has_role! :manager
+    assert @user.has_role? :manager
+    refute @user.has_role? :managers
+
+    assert @user.has_role! :managers
+    assert @user.has_role! 'Manager'
+    assert @user.has_role! 'Managers'
+
+    assert_equal 4, @user.role_objects.count
+
+    assert @user2.has_role! :managers
+    assert @user2.has_role? :managers
+    refute @user2.has_role? :manager
+
+    assert @user2.has_role! :manager
   end
 
   private

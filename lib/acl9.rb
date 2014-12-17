@@ -10,6 +10,7 @@ module Acl9
     :default_subject_method     => :current_user,
     :default_association_name   => :role_objects,
     :protect_global_roles       => true,
+    :normalize_role_names       => true,
   }
 
   mattr_reader :config

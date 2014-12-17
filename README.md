@@ -127,6 +127,13 @@ Set to `'User'` and can be overridden in your
 Set to `:current_user` and can be overridden in
 your controllers, [see the wiki for more](//github.com/be9/acl9/wiki/Access-Control-Subsystem#subject_method).
 
+### :normalize_role_names
+
+Set to `true` (see "Upgrade Notes" below if you're upgrading) and can only be
+changed by setting it in `Acl9.config`. When true this causes Acl9 to normalize
+your role names, normalization is `.to_s.underscore.singularize`. This is done
+on both the setter and getter.
+
 ### :protect_global_roles
 
 Set to `true` (see "Upgrade Notes" below if you're upgrading) and can only be
@@ -168,6 +175,8 @@ Acl9.config[:default_association_name] = :roles
 
 ## Upgrade Notes
 
+### Acl9 now protects global roles by default
+
 Please, PLEASE, **PLEASE** note. If you're upgrading from the `0.x` series of acl9
 then there's an important change in one of the defaults for `1.x`. We flipped
 the default value of `:protect_global_roles` from `false` to `true`.
@@ -202,6 +211,29 @@ user.has_role? :manager      # => false
 
 In words, in 1.x just because you're the `:manager` of a `department` that
 doesn't make you a global `:manager` (anymore).
+
+### Acl9 now normalizes role names by default
+
+So basically we downcase, underscore, and singularize your role names, so:
+
+```ruby
+user.has_role! 'FooBars'
+
+user.has_role? 'FooBars'     # => true
+user.has_role? :foo_bar      # => true
+
+user.has_role! :foo_bar      # => nil, because it was already set above
+```
+
+If you're upgrading then you will want to do something like this:
+
+```ruby
+Role.all.each do |role|
+  role.update! name: role.name.underscore.singularize
+end
+```
+
+**Then check for any duplicates** and resolve those manually.
 
 ## Community
 

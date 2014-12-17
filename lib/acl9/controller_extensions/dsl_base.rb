@@ -101,7 +101,7 @@ module Acl9
           when logged_in then "!#{_subject_ref}.nil?"
           when all       then "true"
           else
-            "!#{_subject_ref}.nil? && #{_subject_ref}.has_role?('#{who.to_s.singularize}', #{object})"
+            "!#{_subject_ref}.nil? && #{_subject_ref}.has_role?('#{who}', #{object})"
           end
         end
 

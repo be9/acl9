@@ -35,6 +35,7 @@ module Acl9
       #
       # @see Acl9::ModelExtensions::Object#accepts_role?
       def has_role?(role_name, object = nil)
+        role_name = normalize role_name
         !! if object.nil? && !::Acl9.config[:protect_global_roles]
           self._role_objects.find_by_name(role_name.to_s) ||
           self._role_objects.member?(get_role(role_name, nil))
@@ -51,6 +52,7 @@ module Acl9
       # @param [Object] object Object to add a role for
       # @see Acl9::ModelExtensions::Object#accepts_role!
       def has_role!(role_name, object = nil)
+        role_name = normalize role_name
         role = get_role(role_name, object)
 
         if role.nil?
@@ -73,6 +75,7 @@ module Acl9
       # @param [Object] object Object to remove a role on
       # @see Acl9::ModelExtensions::Object#accepts_no_role!
       def has_no_role!(role_name, object = nil)
+        role_name = normalize role_name
         delete_role(get_role(role_name, object))
       end
 
@@ -141,7 +144,7 @@ module Acl9
       end
 
       def get_role(role_name, object)
-        role_name = role_name.to_s
+        role_name = normalize role_name
 
         cond = case object
                when Class
@@ -171,6 +174,10 @@ module Acl9
           end
           ret
         end
+      end
+
+      def normalize role_name
+        Acl9.config[:normalize_role_names] ? role_name.to_s.underscore.singularize : role_name.to_s
       end
 
       protected
