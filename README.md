@@ -102,7 +102,7 @@ Subsystem](//github.com/be9/acl9/wiki/Role-Subsystem)
 ## Configuration
 
 There are five configurable settings. These all have sensible defaults which can
-be easily overridden by merging into the `Acl9::config` hash. You can also
+be easily overridden by merging into the `Acl9.config` hash. You can also
 override each of the `:default_*` settings (dropping the "default_" prefix) in
 your models/controllers - see below for more detail:
 
@@ -130,7 +130,7 @@ your controllers, [see the wiki for more](//github.com/be9/acl9/wiki/Access-Cont
 ### :protect_global_roles
 
 Set to `true` (see "Upgrade Notes" below if you're upgrading) and can only be
-changed by merging into `Acl9::config`.  This setting changes how global roles
+changed by merging into `Acl9.config`.  This setting changes how global roles
 (ie. roles with no object) are treated.
 
 Say we set a role like so:
@@ -160,10 +160,10 @@ all be granted a privilege by allowing the global `:admin` role.
 
 ```ruby
 # config/initializers/acl9.rb
-Acl9::config.merge! :default_association_name => :roles
+Acl9.config.merge! :default_association_name => :roles
 
 # or...
-Acl9::config[:default_association_name] = :roles
+Acl9.config[:default_association_name] = :roles
 ```
 
 ## Upgrade Notes

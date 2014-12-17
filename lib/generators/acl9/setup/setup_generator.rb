@@ -30,7 +30,7 @@ module Acl9
         <<-RUBY.strip_heredoc
         # See https://github.com/be9/acl9#configuration for details
         #
-        # Acl9::config.merge!(
+        # Acl9.config.merge!(
         #   :default_role_class_name    => 'Role',
         #   :default_subject_class_name => 'User',
         #   :default_subject_method     => :current_user,
