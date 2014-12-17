@@ -312,6 +312,15 @@ class RolesTest < ActiveSupport::TestCase
     assert @user2.has_role! :manager
   end
 
+  test "subjects by role" do
+    assert @user.has_role! :admin, @foo
+    assert @user2.has_role! :manager, @foo
+
+    assert_equal_elements [ @user, @user2 ], @foo.users
+    assert_equal_elements [ @user ], @foo.users(:admin)
+    assert_equal_elements [ @user2 ], @foo.users(:manager)
+  end
+
   private
 
   def set_some_roles

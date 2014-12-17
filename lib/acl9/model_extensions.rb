@@ -80,7 +80,17 @@ module Acl9
 
         has_many :accepted_roles, :as => :authorizable, :class_name => role, :dependent => :destroy
 
-        has_many :"#{subj_table}", -> { distinct.readonly }, through: :accepted_roles
+        subj_assoc = "assoc_#{subj_table}".to_sym
+        has_many subj_assoc, -> { distinct.readonly }, source: subj_table.to_sym, through: :accepted_roles
+
+        define_method subj_table.to_sym do |role_name=nil|
+          rel = send subj_assoc
+
+          if role_name
+            rel = rel.where role.constantize.table_name.to_sym => { name: role_name }
+          end
+          rel
+        end
 
         include Acl9::ModelExtensions::ForObject
       end
