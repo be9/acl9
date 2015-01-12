@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    acl9 (1.1.0)
+    acl9 (1.2.0)
       rails (~> 4.0)
 
 GEM
