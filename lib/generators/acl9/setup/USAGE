@@ -20,7 +20,7 @@ Examples:
         And it will update (or create a skeleton):
             Subject Model:  app/models/user.rb
 
-    `rails g acl9:install account permission school classroom department`
+    `rails g acl9:setup account permission school classroom department`
 
         This will create:
             Migration:      db/migrate/XXX_create_permission_tables.rb

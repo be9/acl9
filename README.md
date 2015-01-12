@@ -99,6 +99,25 @@ user.has_no_role! :support, School
 You can see more about all this stuff in the wiki under [Role
 Subsystem](//github.com/be9/acl9/wiki/Role-Subsystem)
 
+## Database Setup
+
+As mentioned in [Role Subsystem](//github.com/be9/acl9/wiki/Role-Subsystem) you
+don't have to use these, if your role system is very simple all you need is a
+`has_role?` method in your subject model that returns a boolean and the Access
+Control part of Acl9 will work from that.
+
+However, most commonly, the roles and role assignments are stored in two new
+tables that you create specifically for Acl9. There's a rails generator for
+creating the migrations, role model and updating the subject model and
+optionally any number of object models.
+
+You can view the USAGE for this generator by running the following in your app
+directory:
+
+```sh
+bin/rails g acl9:setup -h
+```
+
 ## Configuration
 
 There are five configurable settings. These all have sensible defaults which can
