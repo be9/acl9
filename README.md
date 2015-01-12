@@ -121,9 +121,10 @@ bin/rails g acl9:setup -h
 ## Configuration
 
 There are five configurable settings. These all have sensible defaults which can
-be easily overridden by merging into the `Acl9.config` hash. You can also
-override each of the `:default_*` settings (dropping the "default_" prefix) in
-your models/controllers - see below for more detail:
+be easily overridden in `config/initializers/acl9.rb`
+
+You can also override each of the `:default_*` settings (dropping the "default_"
+prefix) in your models/controllers - see below for more detail:
 
 ### :default_role_class_name
 
@@ -145,6 +146,13 @@ Set to `'User'` and can be overridden in your
 
 Set to `:current_user` and can be overridden in
 your controllers, [see the wiki for more](//github.com/be9/acl9/wiki/Access-Control-Subsystem#subject_method).
+
+### :default_join_table_name
+
+This is set to `nil` by default, which will mean it will use the Rails method of
+calculating the join table name for a `has_and_belongs_to_many` (eg.
+`users_roles`). Remember that if you override this value, either do it before
+you run `rails g acl9:setup` or be sure to update your migration or database.
 
 ### :normalize_role_names
 
@@ -186,10 +194,21 @@ all be granted a privilege by allowing the global `:admin` role.
 
 ```ruby
 # config/initializers/acl9.rb
-Acl9.config.merge! :default_association_name => :roles
+Acl9.config.default_association_name = :roles
 
 # or...
-Acl9.config[:default_association_name] = :roles
+Acl9.configure do |c|
+  c.default_association_name = :roles
+end
+```
+
+### Reset Defaults
+
+On the off chance that you ever need to reset the config back to its default you
+can use:
+
+```ruby
+Acl9.config.reset!
 ```
 
 ## Upgrade Notes

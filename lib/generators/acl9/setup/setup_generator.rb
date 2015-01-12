@@ -30,14 +30,15 @@ module Acl9
         <<-RUBY.strip_heredoc
         # See https://github.com/be9/acl9#configuration for details
         #
-        # Acl9.config.merge!(
-        #   :default_role_class_name    => 'Role',
-        #   :default_subject_class_name => 'User',
-        #   :default_subject_method     => :current_user,
-        #   :default_association_name   => :role_objects,
-        #   :protect_global_roles       => true,
-        #   :normalize_role_names       => true,
-        # )
+        # Acl9.configure do |c|
+        #   c.default_role_class_name = 'Role'
+        #   c.default_subject_class_name = 'User'
+        #   c.default_subject_method     = :current_user
+        #   c.default_association_name   = :role_objects
+        #   c.default_join_table_name    = nil
+        #   c.protect_global_roles       = true
+        #   c.normalize_role_names       = true
+        # end
         RUBY
       end
     end
@@ -56,7 +57,7 @@ module Acl9
     end
 
     def habtm_table
-      [ subject_name, role_name ].sort.map(&:pluralize).join '_'
+      Acl9.config.default_join_table_name || [ subject_name, role_name ].map(&:pluralize).sort.join('_')
     end
 
     def subject_helper
