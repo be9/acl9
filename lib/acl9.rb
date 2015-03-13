@@ -34,5 +34,5 @@ module Acl9
 end
 
 ActiveRecord::Base.send(:include, Acl9::ModelExtensions)
-ActionController::Base.send(:include, Acl9::ControllerExtensions)
+AbstractController::Base.send :include, Acl9::ControllerExtensions
 Acl9Helpers = Acl9::Helpers unless defined?(Acl9Helpers)
