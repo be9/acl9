@@ -8,6 +8,7 @@ The generator release (and some other cool new features):
  * New: `Acl9.configure` lets you specify config options nicely
  * New: `object.users :managers` to get a list of users who have manager role on
    `object`
+ * Testing against Ruby 2.2
 
 ## 1.1.0 - 15 Dec 2014
 
