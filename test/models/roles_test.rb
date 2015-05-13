@@ -62,6 +62,16 @@ class RolesTest < ActiveSupport::TestCase
     assert @foo.accepts_roles_by? @user
   end
 
+  test "#has_role! with preposition" do
+    assert @user.has_role! :manager, of: @foo
+    assert @user.has_role? :manager, @foo
+  end
+
+  test "#has_role? with preposition" do
+    assert @user.has_role! :manager, @foo
+    assert @user.has_role? :manager, of: @foo
+  end
+
   test "should count object role also as global role when :protect_global_roles == false" do
     Acl9.config[:protect_global_roles] = false
 
@@ -132,6 +142,17 @@ class RolesTest < ActiveSupport::TestCase
 
     assert_difference -> { @user.role_objects.count }, -1 do
       assert @user.has_no_role! :manager, @foo
+    end
+
+    refute @user.has_role? :manager, @foo
+    assert @user.has_role? :user, @foo      # another role on the same object
+  end
+
+  test "#has_no_role! should unassign an object role from user with preposition" do
+    set_some_roles
+
+    assert_difference -> { @user.role_objects.count }, -1 do
+      assert @user.has_no_role! :manager, at: @foo
     end
 
     refute @user.has_role? :manager, @foo
