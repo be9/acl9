@@ -1,6 +1,10 @@
+require File.expand_path '../../prepositions', __FILE__
+
 module Acl9
   module ModelExtensions
     module ForSubject
+      include Prepositions
+
       ##
       # Role check.
       #
@@ -36,6 +40,8 @@ module Acl9
       # @see Acl9::ModelExtensions::Object#accepts_role?
       def has_role?(role_name, object = nil)
         role_name = normalize role_name
+        object = _by_preposition object
+
         !! if object.nil? && !::Acl9.config[:protect_global_roles]
           self._role_objects.find_by_name(role_name.to_s) ||
           self._role_objects.member?(get_role(role_name, nil))
@@ -53,6 +59,8 @@ module Acl9
       # @see Acl9::ModelExtensions::Object#accepts_role!
       def has_role!(role_name, object = nil)
         role_name = normalize role_name
+        object = _by_preposition object
+
         role = get_role(role_name, object)
 
         if role.nil?
@@ -76,6 +84,7 @@ module Acl9
       # @see Acl9::ModelExtensions::Object#accepts_no_role!
       def has_no_role!(role_name, object = nil)
         role_name = normalize role_name
+        object = _by_preposition object
         delete_role(get_role(role_name, object))
       end
 
@@ -181,6 +190,10 @@ module Acl9
       end
 
       protected
+
+      def _by_preposition object
+        object.is_a?(Hash) ? super : object
+      end
 
       def _auth_role_class
         self.class._auth_role_class_name.constantize

@@ -1,6 +1,10 @@
+require File.expand_path '../../prepositions', __FILE__
+
 module Acl9
   module Dsl
     class Base
+      include Prepositions
+
       attr_reader :allows, :denys
 
       def initialize(*args)
@@ -164,18 +168,8 @@ module Acl9
         end
       end
 
-      VALID_PREPOSITIONS = %w(of for in on at by).freeze unless defined? VALID_PREPOSITIONS
-
       def _role_object(options)
-        object = nil
-
-        VALID_PREPOSITIONS.each do |prep|
-          if options[prep.to_sym]
-            raise ArgumentError, "You may only use one preposition to specify object" if object
-
-            object = options[prep.to_sym]
-          end
-        end
+        object = _by_preposition options
 
         case object
         when Class  then object.to_s

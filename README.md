@@ -75,6 +75,7 @@ the admin for a particular school:
 
 ```ruby
 user.has_role! :admin, school
+user.has_role! :admin, of: school
 ```
 
 Then let's say we have some support people in our organization who are dedicated
@@ -84,6 +85,7 @@ assign roles to any object, including a class, and do this:
 
 ```ruby
 user.has_role! :support, School
+user.has_role! :support, for: School
 ```
 
 You can see the `allow` line in our `access_control` block that this corresponds
@@ -94,6 +96,7 @@ Now, when a support person leaves that team, we need to remove that role:
 
 ```ruby
 user.has_no_role! :support, School
+user.has_no_role! :support, at: School
 ```
 
 You can see more about all this stuff in the wiki under [Role
@@ -229,6 +232,7 @@ We all know that this means:
 
 ```ruby
 user.has_role? :manager, department    # => true
+user.has_role? :manager, in: department    # => true
 ```
 
 With `:protect_global_roles` set to `false`, as it was in `0.x` then the above
