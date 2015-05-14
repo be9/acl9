@@ -69,8 +69,8 @@ module Acl9
             raise ArgumentError, "You cannot use default inside an actions block"
           end
 
-          def _set_action_clause(to, except)
-            raise ArgumentError, "You cannot use :to/:except inside actions block" if to || except
+          def _set_action_clause(only, except)
+            raise ArgumentError, "You cannot use :only (:to) or :except inside actions block" if only || except
           end
         end
 
@@ -93,14 +93,20 @@ module Acl9
       alias anyone all
 
       def _permitted_allow_deny_option!(key)
-        raise ArgumentError, "#{key} is not a valid option" unless [:to, :except, :if, :unless, *VALID_PREPOSITIONS].include?(key.to_sym)
+        raise ArgumentError, "#{key} is not a valid option" unless [:to, :only, :except, :if, :unless, *VALID_PREPOSITIONS].include?(key.to_sym)
+      end
+
+      def _retrieve_only options
+        only = [ options.delete(:only) ].flatten.compact
+        only |= [ options.delete(:to) ].flatten.compact
+        only if only.present?
       end
 
       def _parse_and_add_rule(*args)
         options = args.extract_options!
         options.keys.each { |key| _permitted_allow_deny_option!(key) }
 
-        _set_action_clause(options.delete(:to), options.delete(:except))
+        _set_action_clause( _retrieve_only(options), options.delete(:except))
 
         object = _role_object(options)
 
@@ -147,15 +153,15 @@ module Acl9
         (@current_rule == :allow ? @allows : @denys) << anded.join(' && ')
       end
 
-      def _set_action_clause(to, except)
-        raise ArgumentError, "both :to and :except cannot be specified in the rule" if to && except
+      def _set_action_clause(only, except)
+        raise ArgumentError, "both :only (:to) and :except cannot be specified in the rule" if only && except
 
         @action_clause  = nil
-        action_list     = to || except
+        action_list     = only || except
         return unless action_list
 
         expr = _action_check_expression(action_list)
-        @action_clause = to ? "#{expr}" : "!#{expr}"
+        @action_clause = only ? "#{expr}" : "!#{expr}"
       end
 
       def _action_check_expression(action_list)
