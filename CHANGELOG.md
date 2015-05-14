@@ -1,3 +1,8 @@
+## 2.1.0 - 14 May 2015
+
+Added `:only` (as well as `:to`) for specifying actions in `allow`/`deny`
+blocks.
+
 ## 2.0.0 - 14 May 2015
 
 Thanks to @pjungwir:

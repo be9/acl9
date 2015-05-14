@@ -42,13 +42,13 @@ class Admin::SchoolsController < ApplicationController
   access_control do
     allow :support, :of => School
     allow :admins, :managers, :teachers, :of => :school
-    deny :teachers, :to => :destroy
+    deny :teachers, :only => :destroy
 
     action :index do
       allow anonymous, logged_in
     end
 
-    allow logged_in, :to => :show
+    allow logged_in, :only => :show
     deny :students
   end
 
