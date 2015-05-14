@@ -16,7 +16,7 @@ Acl9 is [Semantically Versioned](http://semver.org/), so just add this to your
 `Gemfile`:
 
 ```ruby
-gem 'acl9', '~> 1.0'
+gem 'acl9', '~> 2.0'
 ```
 
 You will need Ruby 2.x
@@ -276,6 +276,16 @@ end
 ```
 
 **Then check for any duplicates** and resolve those manually.
+
+### Acl9 now raises ArgumentError on bad args to `allow`/`deny`
+
+In 2.x and above we now try to help the developer by raising ArgumentError if
+they mess up with the options they pass to `allow`/`deny`, this prevents people
+doing things that they think are going to work but actually aren't like:
+
+```ruby
+  allow all, actions: [ :index, :show ]    # <---- BROKEN!!
+```
 
 ## Community
 

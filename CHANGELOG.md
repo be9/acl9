@@ -1,3 +1,9 @@
+## 2.0.0 - 14 May 2015
+
+Thanks to @pjungwir:
+
+ * Raise ArgumentError now if bad options passed to allow/deny
+
 ## 1.3.0 - 13 May 2015
 
 Quick new feature dump:
