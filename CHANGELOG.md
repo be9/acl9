@@ -1,3 +1,15 @@
+## 1.3.0 - 13 May 2015
+
+Quick new feature dump:
+
+ * Prepositions in has(_no)_role[!?] methods
+
+## 1.2.1 - 13 Mar 2015
+
+Bugfix for API love:
+
+ * Rails::API was erroring
+
 ## 1.2.0 - 12 Jan 2015
 
 The generator release (and some other cool new features):
