@@ -35,7 +35,7 @@ module ControllerExtensions
       end
     end
 
-    [:to, :except].each do |opt|
+    [:to, :only, :except].each do |opt|
       test "should raise an ArgumentError when allow is called with #{opt} option" do
         assert_raise ArgumentError do
           @tester.acl_block! do
