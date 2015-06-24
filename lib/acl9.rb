@@ -22,6 +22,10 @@ module Acl9
         send "#{k}=", v
       end
     end
+
+    def merge! h
+      h.each { |k,v| self[k.to_sym] = v }
+    end
   end
 
   @@config = Config.new( *CONFIG.values_at(*Config.members))
