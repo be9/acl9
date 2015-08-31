@@ -1,5 +1,7 @@
 # acl9
 
+[![Join the chat at https://gitter.im/be9/acl9](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/be9/acl9?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Travis-CI](https://travis-ci.org/be9/acl9.svg?branch=master)](https://travis-ci.org/be9/acl9) [![Code Climate](https://codeclimate.com/github/be9/acl9/badges/gpa.svg)](https://codeclimate.com/github/be9/acl9) [![Test Coverage](https://codeclimate.com/github/be9/acl9/badges/coverage.svg)](https://codeclimate.com/github/be9/acl9)
 
 Acl9 is a role-based authorization system that provides a concise DSL for
