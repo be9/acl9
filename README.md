@@ -289,8 +289,7 @@ doing things that they think are going to work but actually aren't like:
 
 ## Community
 
-**IRC:** Please drop in for a chat on #acl9 on Freenode, [use
-this](http://webchat.freenode.net/) if you have no other option.
+**Gitter:** [Join the gitter chat here](https://gitter.im/be9/acl9)
 
 **docs:** Rdocs are available [here](http://rdoc.info/projects/be9/acl9).
 
