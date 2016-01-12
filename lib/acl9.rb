@@ -37,6 +37,10 @@ module Acl9
   end
 end
 
-ActiveRecord::Base.send(:include, Acl9::ModelExtensions)
-AbstractController::Base.send :include, Acl9::ControllerExtensions
+ActiveRecord::Base.send(:include, Acl9::ModelExtensions) if ActiveRecord
+AbstractController::Base.send(:include, Acl9::ControllerExtensions) if AbstractController
 Acl9Helpers = Acl9::Helpers unless defined?(Acl9Helpers)
+
+if defined? ::Trailblazer::Operation
+  require "acl9/trailblazer"
+end
