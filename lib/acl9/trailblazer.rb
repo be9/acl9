@@ -21,7 +21,7 @@ class ::Trailblazer::Operation
     end
 
     def evaluate_policy params
-      unless self.class.policy_config.(params)
+      unless self.class.policy_config.(params.merge model: model)
         raise ::Acl9::AccessDenied
       end
     end
@@ -34,7 +34,7 @@ class ::Trailblazer::Operation
 
         super
 
-        if existing
+        if existing && !opts[:reset]
           @allows = existing.allows.clone
           @denys  = existing.denys.clone
         end
