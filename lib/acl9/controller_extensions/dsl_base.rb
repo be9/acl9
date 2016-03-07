@@ -1,4 +1,4 @@
-require File.expand_path '../../prepositions', __FILE__
+require_relative "../prepositions"
 
 module Acl9
   module Dsl

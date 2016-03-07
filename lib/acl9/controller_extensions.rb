@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'controller_extensions', 'generators')
+require_relative "controller_extensions/generators"
 
 module Acl9
   module ControllerExtensions

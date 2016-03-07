@@ -1,5 +1,5 @@
-require File.join(File.dirname(__FILE__), 'model_extensions', 'for_subject')
-require File.join(File.dirname(__FILE__), 'model_extensions', 'for_object')
+require_relative "model_extensions/for_subject"
+require_relative "model_extensions/for_object"
 
 module Acl9
   module ModelExtensions  #:nodoc:

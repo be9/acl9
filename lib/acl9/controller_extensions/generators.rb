@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'dsl_base')
+require_relative "dsl_base"
 
 module Acl9
   ##
