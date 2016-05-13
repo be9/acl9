@@ -161,7 +161,7 @@ module Acl9
       def delete_role(role)
         if role
           self._role_objects.delete role
-          if role.send(self._auth_subject_class_name.demodulize.tableize).empty?
+          if self.related_recocds_is_emprty_for_role?(role.id)
             role.destroy unless role.respond_to?(:system?) && role.system?
           end
         end
@@ -179,6 +179,12 @@ module Acl9
 
       def _role_objects
         send(self._auth_role_assoc)
+      end
+
+      def related_recocds_is_emprty_for_role?(role_id)
+        join_table_name = "roles_#{self._auth_subject_class_name.demodulize.tableize}"
+        query_from_join_table = "Select * from #{join_table_name} where `role_id`=#{role_id}"
+        self.class.where(id: ActiveRecord::Base.connection.execute(query_from_join_table).map{|res| res[0]}).empty?
       end
     end
   end
