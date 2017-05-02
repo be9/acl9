@@ -51,6 +51,22 @@ module Acl9
         end
       end
 
+      def has_roles?(role_names, object = nil)
+        !! if object.nil? && !::Acl9.config[:protect_global_roles]
+          self.role_objects.find_by_name(role_name.to_s) ||
+          role_names.each do |role_name|
+            return true if self.role_objects.member?(get_role(role_name, nil))
+          end
+        else
+          role_names.each do |role_name|
+            role = get_role(role_name, object)
+            return true if role && self.role_objects.exists?(role.id)
+          end
+        end
+
+        false
+      end
+
       ##
       # Add specified role on +object+ to +self+.
       #
@@ -140,6 +156,12 @@ module Acl9
 
       def role_selecting_lambda(object)
         case object
+        when ActiveRecord::Relation
+          lambda do |role|
+            auth_id = object.pluck(:id)
+            auth_id.map!(&:to_s) if role.authorizable_id.kind_of?(String)
+            role.authorizable_type == object.name && auth_id.include?(role.authorizable_id)
+          end
         when Class
           lambda { |role| role.authorizable_type == object.to_s }
         when nil
@@ -156,6 +178,8 @@ module Acl9
         role_name = normalize role_name
 
         cond = case object
+               when ActiveRecord::Relation
+                 [ 'name = ? and authorizable_type = ? and authorizable_id IN (?)', role_name, object.base_class.to_s, object.pluck(:id) ]
                when Class
                  [ 'name = ? and authorizable_type = ? and authorizable_id IS NULL', role_name, object.to_s ]
                when nil
