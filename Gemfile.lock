@@ -50,8 +50,6 @@ GEM
     arel (6.0.3)
     builder (3.2.2)
     byebug (8.2.1)
-    codeclimate-test-reporter (0.4.8)
-      simplecov (>= 0.7.1, < 1.0.0)
     concurrent-ruby (1.0.0)
     docile (1.1.5)
     erubis (2.7.0)
@@ -131,11 +129,11 @@ DEPENDENCIES
   acl9!
   appraisal
   byebug
-  codeclimate-test-reporter
   minitap
+  simplecov
   sqlite3
   tapout
   yard
 
 BUNDLED WITH
-   1.11.2
+   1.16.0
