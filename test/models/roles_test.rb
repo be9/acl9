@@ -13,6 +13,14 @@ class RolesTest < ActiveSupport::TestCase
     Acl9.config[:protect_global_roles] = true
   end
 
+  test "should not set global role with nil object" do
+
+    assert_raise Acl9::NilObjectError do
+      assert @user.has_role! :admin, nil
+    end
+    refute @user.has_role? :admin
+  end
+
   test "should not have any roles by default" do
     %w(user manager admin owner).each do |role|
       refute @user.has_role? role

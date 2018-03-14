@@ -8,6 +8,8 @@ class ACLQueryMethodNamed < ApplicationController
   end
 
   def acl?(*args)
+    @foo = Foo.first
+
     allow_ay(*args)
   end
 end

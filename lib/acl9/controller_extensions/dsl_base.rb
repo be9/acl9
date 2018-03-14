@@ -12,6 +12,7 @@ module Acl9
         @allows = []
         @denys  = []
         @original_args = args
+        @action_clause = nil
       end
 
       def acl_block!(&acl_block)
@@ -108,7 +109,7 @@ module Acl9
 
         _set_action_clause( _retrieve_only(options), options.delete(:except))
 
-        object = _role_object(options)
+        object_s = _role_object_s(options)
 
         role_checks = args.map do |who|
           case who
@@ -116,7 +117,7 @@ module Acl9
           when logged_in then "!#{_subject_ref}.nil?"
           when all       then "true"
           else
-            "!#{_subject_ref}.nil? && #{_subject_ref}.has_role?('#{who}', #{object})"
+            "!#{_subject_ref}.nil? && #{_subject_ref}.has_role?('#{who}'#{object_s})"
           end
         end
 
@@ -179,13 +180,13 @@ module Acl9
         end
       end
 
-      def _role_object(options)
+      def _role_object_s(options)
         object = _by_preposition options
 
         case object
-        when Class  then object.to_s
-        when Symbol then _object_ref object
-        when nil    then "nil"
+        when Class  then ", #{object}"
+        when Symbol then ", #{_object_ref object}"
+        when nil    then ""
         else
           raise ArgumentError, "object specified by preposition can only be a Class or a Symbol"
         end

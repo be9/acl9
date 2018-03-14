@@ -8,11 +8,16 @@ require "rails/test_help"
 Rails.backtrace_cleaner.remove_silencers! if ENV["BACKTRACE"]
 
 ActiveRecord::Migration.verbose = false
+
 ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
 
 $VERBOSE = nil
 
 class ActionController::TestCase
+  setup do
+    assert Foo.create
+  end
+
   class << self
     def test_allowed method, action, params={}
       test "allowed #{method} #{action}" do
