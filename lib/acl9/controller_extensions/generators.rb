@@ -93,7 +93,7 @@ module Acl9
         def install_on(controller_class, options)
           super
 
-          controller_class.send(:before_filter, options, &self.to_proc)
+          controller_class.send(:before_action, options, &self.to_proc)
         end
 
         def to_proc
@@ -124,7 +124,7 @@ module Acl9
         def install_on(controller_class, options)
           super
           _add_method(controller_class)
-          controller_class.send(:before_filter, @method_name, options)
+          controller_class.send(:before_action, @method_name, options)
         end
 
         protected

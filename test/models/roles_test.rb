@@ -243,12 +243,16 @@ class RolesTest < ActiveSupport::TestCase
   end
 
   test "should be able to get users that have a role on a authorized object with text primary key" do
+
+    assert @user = StringUser.create
+    assert @user2 = StringUser.create
+
     assert uuid = Uuid.create( id: "C41642EE-2780-0001-189F-17F3101B26E0" )
 
     assert @user.has_role! :owner, uuid
     assert @user2.has_role! :owner, uuid
 
-    assert_equal 2, uuid.users.count
+    assert_equal 2, uuid.string_users.count
   end
 
   test "should accept :symbols as role names" do

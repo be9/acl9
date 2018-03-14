@@ -1,6 +1,6 @@
 # acl9
 
-[![Travis-CI](https://travis-ci.org/be9/acl9.svg?branch=master)](https://travis-ci.org/be9/acl9) [![Code Climate](https://codeclimate.com/github/be9/acl9/badges/gpa.svg)](https://codeclimate.com/github/be9/acl9) [![Test Coverage](https://codeclimate.com/github/be9/acl9/badges/coverage.svg)](https://codeclimate.com/github/be9/acl9)
+[![Travis-CI](https://travis-ci.org/be9/acl9.svg?branch=master)](https://travis-ci.org/be9/acl9)
 
 Acl9 is a role-based authorization system that provides a concise DSL for
 securing your Rails application.
@@ -16,10 +16,18 @@ Acl9 is [Semantically Versioned](http://semver.org/), so just add this to your
 `Gemfile`:
 
 ```ruby
-gem 'acl9', '~> 2.0'
+gem 'acl9', '~> 3.0'
 ```
 
 You will need Ruby 2.x
+
+### Rails 4 - stick with 2.x
+
+```ruby
+gem 'acl9', '~> 2.0'
+```
+
+### Rails < 4 - upgrade Rails!
 
 We dropped support for Rails < 4 in the 1.x releases, so if you're still using
 Rails 2.x or 3.x then you'll want this:

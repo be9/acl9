@@ -3,8 +3,7 @@
 source "http://rubygems.org"
 
 gem "appraisal"
-gem "tapout"
-gem "minitap"
-gem "rails", "~> 4.1.0"
+gem "byebug"
+gem "rails", "~> 5.0.0"
 
-gemspec :path => "../"
+gemspec path: "../"

@@ -129,7 +129,7 @@ module Acl9
           :class_name => subject,
           :join_table => join_table
 
-        belongs_to :authorizable, :polymorphic => true
+        belongs_to :authorizable, polymorphic: true, optional: true
       end
     end
   end

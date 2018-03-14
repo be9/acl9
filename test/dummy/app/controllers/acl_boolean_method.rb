@@ -1,12 +1,12 @@
 class ACLBooleanMethod < EmptyController
-  access_control :acl, :filter => false do
-    allow all, :to => [:index, :show], :if => :true_meth
-    allow :admin,                      :unless => :false_meth
-    allow all,                         :if => :false_meth
-    allow all,                         :unless => :true_meth
+  access_control :acl, filter: false do
+    allow all, to: [:index, :show], if: :true_meth
+    allow :admin,               unless: :false_meth
+    allow all,                      if: :false_meth
+    allow all,                  unless: :true_meth
   end
 
-  before_filter :check_acl
+  before_action :check_acl
 
   def check_acl
     if self.acl

@@ -7,7 +7,7 @@ class ACLObjectsHashTest < ActionController::TestCase
   end
 
   test "objects hash preferred to @ivar" do
-    assert get :allow, :user_id => @user.id
+    assert get :allow, params: { user_id: @user.id }
     assert_response :ok
   end
 

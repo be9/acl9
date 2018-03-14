@@ -1,22 +1,16 @@
 cache: bundler
 language: ruby
 rvm:
-  - 2.0.0
-  - 2.1.8
-  - 2.2.3
-  - 2.3.0
+  - 2.4.3
+  - 2.5.0
   - ruby-head
 
 gemfile:
-  - gemfiles/rails_4.0.gemfile
-  - gemfiles/rails_4.1.gemfile
-  - gemfiles/rails_4.2.gemfile
+  - gemfiles/rails_5.0.gemfile
+  - gemfiles/rails_5.1.gemfile
+  - gemfiles/rails_5.2.gemfile
 
 matrix:
   fast_finish: true
   allow_failures:
     - rvm: ruby-head
-
-addons:
-  code_climate:
-    repo_token: 6701faf591ff926cd9b3ea7f07c5e72984d2b1e26b33caba26114a6bfe859a11

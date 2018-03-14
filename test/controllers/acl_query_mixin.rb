@@ -44,7 +44,7 @@ module ACLQueryMixin
 
       test "should return true for foo owner" do
         assert @controller.current_user = @owneroffoo
-        assert @controller.acl? :fooize, :foo => Foo.first
+        assert @controller.acl? :fooize, foo: Foo.first
       end
     end
   end

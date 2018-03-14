@@ -10,9 +10,8 @@ module Acl9
     argument :arg_role, type: :string, default: 'role', banner: "role"
     argument :arg_objects, type: :array, default: [], banner: "objects..."
 
-    def create_migration
-      next_migration_number = self.class.next_migration_number( File.expand_path( '../db/migrate', __FILE__))
-      template "create_role_tables.rb", "db/migrate/#{next_migration_number}_create_#{role_name}_tables.rb"
+    def create_migration_file
+      migration_template "create_role_tables.rb", File.join(db_migrate_path, "create_#{role_name}_tables.rb")
     end
 
     def create_models
@@ -54,6 +53,14 @@ module Acl9
 
     def role_class_name
       role_name.classify
+    end
+
+    def model_base_name
+      r5? ? ApplicationRecord : ActiveRecord::Base
+    end
+
+    def r5?
+      Rails.gem_version >= Gem::Version.new(5)
     end
 
     def habtm_table

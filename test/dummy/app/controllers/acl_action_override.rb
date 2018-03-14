@@ -1,8 +1,8 @@
 class ACLActionOverride < ApplicationController
-  access_control :allowed?, :filter => false do
-    allow all, :to => :index
-    deny all, :to => :show
-    allow :owner, :of => :foo, :to => :edit
+  access_control :allowed?, filter: false do
+    allow all, to: :index
+    deny all, to: :show
+    allow :owner, of: :foo, to: :edit
   end
 
   def check_allow
@@ -10,6 +10,6 @@ class ACLActionOverride < ApplicationController
   end
 
   def check_allow_with_foo
-    head allowed?(params[:_action], :foo => Foo.first) ? :ok : :unauthorized
+    head allowed?(params[:_action], foo: Foo.first) ? :ok : :unauthorized
   end
 end

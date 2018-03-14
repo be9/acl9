@@ -25,18 +25,18 @@ class ArgumentsCheckingTest < ActionController::TestCase
     end
   end
 
-  test "raise ArgumentError with :helper => true and no method name" do
+  test "raise ArgumentError with helper: true and no method name" do
     assert_raise ArgumentError do
       class FailureController < ApplicationController
-        access_control :helper => true do end
+        access_control helper: true do end
       end
     end
   end
 
-  test "raise ArgumentError with :helper => :method and a method name" do
+  test "raise ArgumentError with helper: :method and a method name" do
     assert_raise ArgumentError do
       class FailureController < ApplicationController
-        access_control :meth, :helper => :another_meth do end
+        access_control :meth, helper: :another_meth do end
       end
     end
   end
