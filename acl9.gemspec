@@ -20,9 +20,8 @@ Gem::Specification.new do |s|
 
   s.rdoc_options      = ["--charset=UTF-8"]
 
-  s.add_dependency "rails", '~> 5.0'
+  s.add_dependency "rails", '> 5.0', '< 7.0'
 
   s.add_development_dependency "yard"
-  s.add_development_dependency 'sqlite3'
+  s.add_development_dependency "sqlite3"
 end
-
