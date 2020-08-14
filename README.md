@@ -16,10 +16,10 @@ Acl9 is [Semantically Versioned](http://semver.org/), so just add this to your
 `Gemfile`:
 
 ```ruby
-gem 'acl9', '~> 3.0'
+gem 'acl9', '~> 4.0'
 ```
 
-You will need Ruby 2.x
+You will need Ruby 2.7.x
 
 ### Rails 4 - stick with 2.x
 

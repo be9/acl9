@@ -1,3 +1,7 @@
+## 4.0.0 - 14 Aug 2020
+
+Updated dependencies for Ruby 2.7.1, Rails 6.0
+
 ## 2.1.0 - 14 May 2015
 
 Added `:only` (as well as `:to`) for specifying actions in `allow`/`deny`
