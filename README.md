@@ -13,7 +13,7 @@ permissions correct.
 ## Installation
 
 Acl9 is [Semantically Versioned](http://semver.org/), so just add this to your
-`Gemfile`:
+`Gemfile` (note that you need 3.2 for Rails 6+ support):
 
 ```ruby
 gem 'acl9', '~> 3.2'
