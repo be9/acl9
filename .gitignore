@@ -19,3 +19,6 @@
 
 /doc
 /.yardoc
+
+/acl9-*.gem
+/gemfiles/*.lock

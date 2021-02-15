@@ -1,7 +1,3 @@
-## 2.2.0 - 20 September 2019
-
-Added support and appraisal for Rails 6.0 since it is released.
-
 ## 2.1.0 - 14 May 2015
 
 Added `:only` (as well as `:to`) for specifying actions in `allow`/`deny`
