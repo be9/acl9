@@ -9,7 +9,13 @@ Rails.backtrace_cleaner.remove_silencers! if ENV["BACKTRACE"]
 
 ActiveRecord::Migration.verbose = false
 
-ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
+if Rails.gem_version >= Gem::Version.new('6.0')
+  ActiveRecord::MigrationContext.new(File.expand_path('../dummy/db/migrate', __FILE__), ActiveRecord::SchemaMigration).migrate
+elsif Rails.gem_version >= Gem::Version.new('5.2.0')
+  ActiveRecord::MigrationContext.new(File.expand_path('../dummy/db/migrate', __FILE__)).migrate
+else
+  ActiveRecord::Migrator.migrate(File.expand_path('../dummy/db/migrate', __FILE__))
+end
 
 $VERBOSE = nil
 

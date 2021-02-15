@@ -32,7 +32,7 @@ class CreateTables < ActiveRecord::Migration[ActiveRecord::Migration.current_ver
       add_index :roles_users, :user_id
       add_index :roles_users, :role_id
     end
-    
+
     create_table :users do |t|
       t.string :name
       t.timestamps null: false
@@ -135,7 +135,7 @@ class CreateTables < ActiveRecord::Migration[ActiveRecord::Migration.current_ver
       add_index :other_roles_users, :user_id
       add_index :other_roles_users, :role_id
     end
-    
+
     create_table :other_users do |t|
       t.string :name
       t.timestamps null: false
