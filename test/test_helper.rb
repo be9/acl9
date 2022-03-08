@@ -20,10 +20,6 @@ end
 $VERBOSE = nil
 
 class ActionController::TestCase
-  setup do
-    assert Foo.create
-  end
-
   class << self
     def test_allowed method, action, params={}
       test "allowed #{method} #{action}" do

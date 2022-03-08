@@ -13,13 +13,10 @@ class ACLHelperMethodTest < ActionController::TestCase
   end
 
   test "another user denied" do
-    assert @another = User.create
-    assert @another.has_role! :owner, Foo.first_or_create
-
     assert @user.has_role! :owner
 
     assert get :allow, params: { user_id: @user.id }
-    assert_select 'div', 'AccessDenied'
+    assert_select 'div', 'OK'
   end
 
   test "anon denied" do

@@ -5,12 +5,6 @@ module Acl9
     module ForSubject
       include Prepositions
 
-      DEFAULT = Class.new do
-        def default?
-          true
-        end
-      end.new.freeze
-
       ##
       # Role check.
       #
@@ -44,17 +38,16 @@ module Acl9
       # @param [Object] object Object to query a role on
       #
       # @see Acl9::ModelExtensions::Object#accepts_role?
-      def has_role?(role_name, object = default)
-        check! object
+      def has_role?(role_name, object = nil)
         role_name = normalize role_name
         object = _by_preposition object
 
-        !! if object == default && !::Acl9.config[:protect_global_roles]
-          _role_objects.find_by_name(role_name.to_s) ||
-          _role_objects.member?(get_role(role_name, object))
+        !! if object.nil? && !::Acl9.config[:protect_global_roles]
+          self._role_objects.find_by_name(role_name.to_s) ||
+          self._role_objects.member?(get_role(role_name, nil))
         else
           role = get_role(role_name, object)
-          role && _role_objects.exists?(role.id)
+          role && self._role_objects.exists?(role.id)
         end
       end
 
@@ -64,8 +57,7 @@ module Acl9
       # @param [Symbol,String] role_name Role name
       # @param [Object] object Object to add a role for
       # @see Acl9::ModelExtensions::Object#accepts_role!
-      def has_role!(role_name, object = default)
-        check! object
+      def has_role!(role_name, object = nil)
         role_name = normalize role_name
         object = _by_preposition object
 
@@ -73,15 +65,15 @@ module Acl9
 
         if role.nil?
           role_attrs = case object
-                       when Class   then { :authorizable_type => object.to_s }
-                       when default then {}
-                       else              { :authorizable => object }
-                       end.merge({ :name => role_name.to_s })
+                       when Class then { :authorizable_type => object.to_s }
+                       when nil   then {}
+                       else            { :authorizable => object }
+                       end.merge(      { :name => role_name.to_s })
 
-          role = _auth_role_class.create(role_attrs)
+          role = self._auth_role_class.create(role_attrs)
         end
 
-        _role_objects << role if role && !_role_objects.exists?(role.id)
+        self._role_objects << role if role && !self._role_objects.exists?(role.id)
       end
 
       ##
@@ -90,8 +82,7 @@ module Acl9
       # @param [Symbol,String] role_name Role name
       # @param [Object] object Object to remove a role on
       # @see Acl9::ModelExtensions::Object#accepts_no_role!
-      def has_no_role!(role_name, object = default)
-        check! object
+      def has_no_role!(role_name, object = nil)
         role_name = normalize role_name
         object = _by_preposition object
         delete_role(get_role(role_name, object))
@@ -104,8 +95,7 @@ module Acl9
       # @return [Boolean] Returns true if +self+ has any roles on +object+.
       # @see Acl9::ModelExtensions::Object#accepts_roles_by?
       def has_roles_for?(object)
-        check! object
-        !!_role_objects.detect(&role_selecting_lambda(object))
+        !!self._role_objects.detect(&role_selecting_lambda(object))
       end
 
       alias :has_role_for? :has_roles_for?
@@ -122,16 +112,14 @@ module Acl9
       #
       #   user.roles_for(product).map(&:name).sort  #=> role names in alphabetical order
       def roles_for(object)
-        check! object
-        _role_objects.select(&role_selecting_lambda(object))
+        self._role_objects.select(&role_selecting_lambda(object))
       end
 
       ##
       # Unassign any roles on +object+ from +self+.
       #
-      # @param [Object,default] object Object to unassign roles for. Empty args means unassign global roles.
-      def has_no_roles_for!(object = default)
-        check! object
+      # @param [Object,nil] object Object to unassign roles for. +nil+ means unassign global roles.
+      def has_no_roles_for!(object = nil)
         roles_for(object).each { |role| delete_role(role) }
       end
 
@@ -140,11 +128,11 @@ module Acl9
       def has_no_roles!
         # for some reason simple
         #
-        #   roles.each { |role| delete_role(role) }
+        #   self.roles.each { |role| delete_role(role) }
         #
         # doesn't work. seems like a bug in ActiveRecord
-        _role_objects.map(&:id).each do |role_id|
-          delete_role _auth_role_class.find(role_id)
+        self._role_objects.map(&:id).each do |role_id|
+          delete_role self._auth_role_class.find(role_id)
         end
       end
 
@@ -154,7 +142,7 @@ module Acl9
         case object
         when Class
           lambda { |role| role.authorizable_type == object.to_s }
-        when default
+        when nil
           lambda { |role| role.authorizable.nil? }
         else
           lambda do |role|
@@ -164,14 +152,13 @@ module Acl9
         end
       end
 
-      def get_role(role_name, object = default)
-        check! object
+      def get_role(role_name, object)
         role_name = normalize role_name
 
         cond = case object
                when Class
                  [ 'name = ? and authorizable_type = ? and authorizable_id IS NULL', role_name, object.to_s ]
-               when default
+               when nil
                  [ 'name = ? and authorizable_type IS NULL and authorizable_id IS NULL', role_name ]
                else
                  [
@@ -180,17 +167,17 @@ module Acl9
                  ]
                end
 
-        if _auth_role_class.respond_to?(:where)
-          _auth_role_class.where(cond).first
+        if self._auth_role_class.respond_to?(:where)
+          self._auth_role_class.where(cond).first
         else
-          _auth_role_class.find(:first, :conditions => cond)
+          self._auth_role_class.find(:first, :conditions => cond)
         end
       end
 
       def delete_role(role)
         if role
-          if ret = _role_objects.delete(role)
-            if role.send(_auth_subject_class_name.demodulize.tableize).empty?
+          if ret = self._role_objects.delete(role)
+            if role.send(self._auth_subject_class_name.demodulize.tableize).empty?
               ret &&= role.destroy unless role.respond_to?(:system?) && role.system?
             end
           end
@@ -202,11 +189,7 @@ module Acl9
         Acl9.config[:normalize_role_names] ? role_name.to_s.underscore.singularize : role_name.to_s
       end
 
-      private
-
-      def check! object
-        raise NilObjectError if object.nil?
-      end
+      protected
 
       def _by_preposition object
         object.is_a?(Hash) ? super : object
@@ -221,11 +204,7 @@ module Acl9
       end
 
       def _role_objects
-        send(_auth_role_assoc)
-      end
-
-      def default
-        DEFAULT
+        send(self._auth_role_assoc)
       end
     end
   end

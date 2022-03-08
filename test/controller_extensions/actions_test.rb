@@ -121,7 +121,7 @@ module ControllerExtensions
 
       assert set_all_actions
       permit_some owner,  @all_actions, :foo => foo
-      permit_some hacker, %w(show index destroy), foo: foo
+      permit_some hacker, %w(show index destroy)
       permit_some another_owner, %w(show index destroy), :foo => foo
     end
 
