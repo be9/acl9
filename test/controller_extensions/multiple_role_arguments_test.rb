@@ -107,30 +107,29 @@ module ControllerExtensions
 
     test "should also respect :to and :except" do
       assert foo = Foo.create
-      assert too = Foo.create
 
-      assert ( goo = User.create ).has_role! :goo
+      assert ( foo = User.create ).has_role! :foo
       assert ( joo = User.create ).has_role! :joo, foo
       assert ( qoo = User.create ).has_role! :qoo, Bar
 
       @tester.acl_block! do
-        allow :goo, :boo,              :to => [:index, :show]
+        allow :foo, :boo,              :to => [:index, :show]
         allow :zoo, :joo, :by => :foo, :to => [:edit, :update]
         allow :qoo, :woo, :of => Bar
         deny  :qoo, :woo, :of => Bar,  :except => [:delete, :destroy]
       end
 
-      assert_permitted goo, 'index'
-      assert_permitted goo, 'show'
-      assert_forbidden goo, 'edit', foo: too
+      assert_permitted foo, 'index'
+      assert_permitted foo, 'show'
+      assert_forbidden foo, 'edit'
       assert_permitted joo, 'edit', :foo => foo
       assert_permitted joo, 'update', :foo => foo
       assert_forbidden joo, 'show', :foo => foo
-      assert_forbidden joo, 'show', foo: foo
-      assert_permitted qoo, 'delete', foo: too
-      assert_permitted qoo, 'destroy', foo: too
-      assert_forbidden qoo, 'edit', foo: too
-      assert_forbidden qoo, 'show', foo: too
+      assert_forbidden joo, 'show'
+      assert_permitted qoo, 'delete'
+      assert_permitted qoo, 'destroy'
+      assert_forbidden qoo, 'edit'
+      assert_forbidden qoo, 'show'
     end
   end
 end

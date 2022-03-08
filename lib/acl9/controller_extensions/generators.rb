@@ -1,6 +1,37 @@
 require_relative "dsl_base"
 
 module Acl9
+  ##
+  # This exception is raised whenever ACL block finds that the current user
+  # is not authorized for the controller action he wants to execute.
+  # @example How to catch this exception in ApplicationController
+  #   class ApplicationController < ActionController::Base
+  #     rescue_from 'Acl9::AccessDenied', :with => :access_denied
+  #
+  #     # ...other stuff...
+  #     private
+  #
+  #     def access_denied
+  #       if current_user
+  #         # It's presumed you have a template with words of pity and regret
+  #         # for unhappy user who is not authorized to do what he wanted
+  #         render :template => 'home/access_denied'
+  #       else
+  #         # In this case user has not even logged in. Might be OK after login.
+  #         flash[:notice] = 'Access denied. Try to log in first.'
+  #         redirect_to login_path
+  #       end
+  #     end
+  #   end
+  #
+  class AccessDenied < StandardError; end
+
+  ##
+  # This exception is raised when acl9 has generated invalid code for the
+  # filtering method or block. Should never happen, and it's a bug when it
+  # happens.
+  class FilterSyntaxError < StandardError; end
+
   module Dsl
     module Generators
       class BaseGenerator < Acl9::Dsl::Base
@@ -140,7 +171,7 @@ module Acl9
                 raise ArgumentError, "call #{@method_name} with 0, 1 or 2 arguments"
               end
 
-              self.action_name = args.first.to_s if args.present?
+              action_name = args.empty? ? self.action_name : args.first.to_s
 
               return #{allowance_expression}
             end

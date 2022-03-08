@@ -6,10 +6,7 @@ module ACLQueryMixin
       setup do
         assert ( @editor = User.create ).has_role! :editor
         assert ( @viewer = User.create ).has_role! :viewer
-        assert ( @foo = Foo.first_or_create )
-        assert ( @owneroffoo = User.create ).has_role! :owner, @foo
-
-        @controller.before_action
+        assert ( @owneroffoo = User.create ).has_role! :owner, Foo.first_or_create
       end
 
       %i[edit update destroy].each do |meth|
