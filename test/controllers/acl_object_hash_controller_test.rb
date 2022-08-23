@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ACLObjectsHashTest < ActionController::TestCase
+class AclObjectsHashControllerTest < ActionController::TestCase
   setup do
     assert @user = User.create
     assert @user.has_role! :owner, Foo.first_or_create

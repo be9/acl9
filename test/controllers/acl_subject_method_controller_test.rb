@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ACLSubjectMethodTest < ActionController::TestCase
+class AclSubjectMethodControllerTest < ActionController::TestCase
   test "allow the only user to index" do
     assert ( user = User.create ).has_role! :the_only_one
     assert get :index, params: { user_id: user.id }

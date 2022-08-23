@@ -1,4 +1,4 @@
-class ACLArguments < EmptyController
+class AclArgumentsController < EmptyController
   access_control :except => [:index, :show] do
     allow :admin, :if => :true_meth, :unless => :false_meth
   end

@@ -1,4 +1,4 @@
-class ACLHelperMethod < ApplicationController
+class AclHelperMethodController < ApplicationController
   access_control :helper => :foo? do
     allow :owner, :of => :foo
   end

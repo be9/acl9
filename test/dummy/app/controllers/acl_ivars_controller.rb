@@ -1,4 +1,4 @@
-class ACLIvars < EmptyController
+class AclIvarsController < EmptyController
 
   before_action :set_ivars
 

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ACLHelperMethodTest < ActionController::TestCase
+class AclHelperMethodControllerTest < ActionController::TestCase
   setup do
     assert @user = User.create
   end

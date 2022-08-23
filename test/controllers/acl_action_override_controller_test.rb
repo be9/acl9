@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ACLActionOverrideTest < ActionController::TestCase
+class AclActionOverrideControllerTest < ActionController::TestCase
   test "anon can index" do
     assert get :check_allow, params: { _action: :index }
     assert_response :ok

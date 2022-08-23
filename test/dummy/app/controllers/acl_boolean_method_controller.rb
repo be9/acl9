@@ -1,4 +1,4 @@
-class ACLBooleanMethod < EmptyController
+class AclBooleanMethodController < EmptyController
   access_control :acl, filter: false do
     allow all, to: [:index, :show], if: :true_meth
     allow :admin,               unless: :false_meth

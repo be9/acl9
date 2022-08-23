@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ArgumentsCheckingTest < ActionController::TestCase
+class ArgumentsCheckingControllerTest < ActionController::TestCase
   test "raise ArgumentError without a block" do
     assert_raise ArgumentError do
       class FailureController < ApplicationController

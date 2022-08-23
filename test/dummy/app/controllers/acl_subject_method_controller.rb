@@ -1,4 +1,4 @@
-class ACLSubjectMethod < ApplicationController
+class AclSubjectMethodController < ApplicationController
   access_control :subject_method => :the_only_user do
     allow :the_only_one
   end

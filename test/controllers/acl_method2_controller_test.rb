@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ACLMethod2Test < ActionController::TestCase
+class AclMethod2ControllerTest < ActionController::TestCase
   include BaseTests
   include ShouldRespondToAcl
 end
