@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
 
   s.files             = `git ls-files`.split($\)
   s.test_files        = s.files.grep(%r{^test/})
-  s.name              = "acl9"
+  s.name              = "careacademy-acl9"
   s.require_paths     = ["lib"]
   s.version           = Acl9::VERSION
   s.license           = 'MIT'
