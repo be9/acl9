@@ -1,3 +1,3 @@
 module Acl9
-  VERSION = "3.2.0.2"
+  VERSION = "3.3.1"
 end
