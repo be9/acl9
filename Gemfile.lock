@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    acl9 (3.3.1)
+    careacademy-acl9 (3.4.0)
       rails (>= 5.0, < 7.1)
 
 GEM
@@ -161,9 +161,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  acl9!
   appraisal
   byebug
+  careacademy-acl9!
   sqlite3
   yard
 
