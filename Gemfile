@@ -5,3 +5,4 @@ gemspec
 
 gem 'appraisal'
 gem 'byebug'
+gem 'sqlite3'

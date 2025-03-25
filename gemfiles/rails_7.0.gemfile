@@ -4,6 +4,10 @@ source "http://rubygems.org"
 
 gem "appraisal"
 gem "byebug"
+gem "drb"
+gem "mutex_m"
+gem "bigdecimal"
+gem "sqlite3", "~> 1.6"
 gem "rails", "~> 7.0.0"
 
 gemspec path: "../"

@@ -1,3 +1,4 @@
+require 'ostruct'
 require_relative 'base'
 
 module ControllerExtensions

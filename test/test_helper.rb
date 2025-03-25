@@ -2,6 +2,9 @@ ENV["RAILS_ENV"] = "test"
 
 require 'minitest/autorun'
 
+$VERBOSE = nil
+
+require "logger"
 require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 require "rails/test_help"
 
@@ -9,15 +12,7 @@ Rails.backtrace_cleaner.remove_silencers! if ENV["BACKTRACE"]
 
 ActiveRecord::Migration.verbose = false
 
-if Rails.gem_version >= Gem::Version.new('6.0')
-  ActiveRecord::MigrationContext.new(File.expand_path('../dummy/db/migrate', __FILE__), ActiveRecord::SchemaMigration).migrate
-elsif Rails.gem_version >= Gem::Version.new('5.2.0')
-  ActiveRecord::MigrationContext.new(File.expand_path('../dummy/db/migrate', __FILE__)).migrate
-else
-  ActiveRecord::Migrator.migrate(File.expand_path('../dummy/db/migrate', __FILE__))
-end
-
-$VERBOSE = nil
+ActiveRecord::MigrationContext.new(File.expand_path('../dummy/db/migrate', __FILE__)).migrate
 
 class ActionController::TestCase
   setup do

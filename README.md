@@ -1,6 +1,6 @@
 # acl9
 
-[![Travis-CI](https://travis-ci.org/be9/acl9.svg?branch=master)](https://travis-ci.org/be9/acl9)
+![Workflow Status](https://github.com/be9/acl9/actions/workflows/acl9.yml/badge.svg)
 
 Acl9 is a role-based authorization system that provides a concise DSL for
 securing your Rails application.
@@ -19,7 +19,7 @@ Acl9 is [Semantically Versioned](http://semver.org/), so just add this to your
 gem 'acl9', '~> 3.2'
 ```
 
-You will need Ruby > 2.0
+We're only testing with Ruby >= 3.1 so YMMV for less than that
 
 ### Rails 4 - stick with 2.x
 

@@ -4,6 +4,7 @@ source "http://rubygems.org"
 
 gem "appraisal"
 gem "byebug"
-gem "rails", "~> 6.1.0"
+gem "sqlite3"
+gem "rails", "~> 8.0.0"
 
 gemspec path: "../"
